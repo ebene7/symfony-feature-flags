@@ -2,26 +2,44 @@
 
 namespace E7\FeatureFlagsBundle\Feature;
 
+use E7\FeatureFlagsBundle\Feature\Conditions\ChainCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface;
+
 class Feature implements FeatureInterface
 {
     /** @var string */
     private $name;
-    
+
+    /** @var ChainCondition */
+    private $conditions;
+
     /** @var FeatureInterface */
     private $parent;
-    
-    private $conditions = [];
-    
+
+    /**
+     * Feature constructor.
+     * @param string                $name
+     * @param ChainCondition        $conditions
+     * @param FeatureInterface|null $parent
+     */
     public function __construct(
-        string $name, 
-        $conditions,
-        FeatureInterface $parent
+        string $name,
+        ChainCondition $conditions = null,
+        FeatureInterface $parent = null
     ) {
         $this->name = $name;
-        $this->setConditions($conditions);
+        $this->conditions = $conditions ?: new ChainCondition();
         $this->parent = $parent;
     }
-    
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->getName();
+    }
+
     /**
      * @return string
      */
@@ -29,17 +47,33 @@ class Feature implements FeatureInterface
     {
         return $this->name;
     }
-    
-    public function addCondition($name, $config = null)
+
+    /**
+     * @param ConditionInterface $condition
+     * @return Feature
+     */
+    public function addCondition(ConditionInterface $condition)
     {
-        
+        $this->conditions->addCondition($condition);
+
+        return $this;
     }
-    
+
+    /**
+     * @return FeatureInterface
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
     /**
      * @inheritDoc
      */
     public function isEnabled()
     {
+        $enabled = true;
+
         return true;
     }
 }

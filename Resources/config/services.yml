@@ -1,6 +1,8 @@
 services:
     
     E7\FeatureFlagsBundle\Feature\FeatureBox:
+        arguments:
+            - !tagged e7.feature_flag
         public: true
         alias: 'feature_flags'
     

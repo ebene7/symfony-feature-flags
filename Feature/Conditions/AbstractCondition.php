@@ -2,11 +2,12 @@
 
 namespace E7\FeatureFlagsBundle\Feature\Conditions;
 
+/**
+ * Class AbstractCondition
+ * @package E7\FeatureFlagsBundle\Feature\Conditions
+ */
 abstract class AbstractCondition implements ConditionInterface
 {
-    private $name;
-    
-    
     /**
      * @return string
      */
