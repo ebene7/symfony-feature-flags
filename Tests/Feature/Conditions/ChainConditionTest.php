@@ -17,12 +17,12 @@ class ChainConditionTest extends ConditionTestCase
         $this->doTestToStringConversion(new ChainCondition());
     }
 
-    public function testVoteDefaultReturnValue()
-    {
-        $condition = new ChainCondition();
-
-        $this->assertTrue($condition->vote());
-    }
+//    public function testVoteDefaultReturnValue()
+//    {
+//        $condition = new ChainCondition();
+//
+//        $this->assertTrue($condition->vote());
+//    }
 
     public function testIteratorAggregateInterface()
     {

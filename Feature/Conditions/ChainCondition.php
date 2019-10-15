@@ -4,6 +4,7 @@ namespace E7\FeatureFlagsBundle\Feature\Conditions;
 
 use ArrayIterator;
 use Countable;
+use E7\FeatureFlagsBundle\Context\ContextInterface;
 use IteratorAggregate;
 use Traversable;
 
@@ -27,11 +28,11 @@ class ChainCondition extends AbstractCondition implements IteratorAggregate, Cou
     /**
      * @inheritDoc
      */
-    public function vote()
+    protected function doVote(ContextInterface $context)
     {
         /** @var ConditionInterface $condition */
         foreach ($this->conditions as $condition) {
-            if (!$condition->vote()) {
+            if (!$condition->vote($context)) {
                 return false;
             }
         }

@@ -2,9 +2,14 @@
 
 namespace E7\FeatureFlagsBundle\Feature;
 
+use E7\FeatureFlagsBundle\Context\ContextInterface;
 use E7\FeatureFlagsBundle\Feature\Conditions\ChainCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface;
 
+/**
+ * Class Feature
+ * @package E7\FeatureFlagsBundle\Feature
+ */
 class Feature implements FeatureInterface
 {
     /** @var string */
@@ -70,10 +75,8 @@ class Feature implements FeatureInterface
     /**
      * @inheritDoc
      */
-    public function isEnabled()
+    public function isEnabled(ContextInterface $context)
     {
-        $enabled = true;
-
-        return true;
+        return $this->conditions->vote($context);
     }
 }

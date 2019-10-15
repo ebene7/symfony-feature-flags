@@ -2,6 +2,11 @@
 
 namespace E7\FeatureFlagsBundle\Feature\Conditions;
 
+use E7\FeatureFlagsBundle\Context\ContextInterface;
+
+/**
+ * Interface ConditionInterface
+ */
 interface ConditionInterface
 {
     /**
@@ -9,5 +14,8 @@ interface ConditionInterface
      */
     public function getName();
     
-    public function vote();
+    /**
+     * @return boolean
+     */
+    public function vote(ContextInterface $context);
 }
