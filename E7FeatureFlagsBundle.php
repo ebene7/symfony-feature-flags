@@ -1,6 +1,6 @@
 <?php
 
-namespace E7\MetaBundle;
+namespace E7\FeatureFlagsBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
