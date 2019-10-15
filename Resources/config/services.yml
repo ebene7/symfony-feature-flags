@@ -1,11 +1,13 @@
 services:
-    
+
     E7\FeatureFlagsBundle\Feature\FeatureBox:
         arguments:
             - !tagged e7.feature_flag
+
+    feature_flags:
         public: true
-        alias: 'feature_flags'
-    
+        alias: E7\FeatureFlagsBundle\Feature\FeatureBox
+
     E7\FeatureFlagsBundle\Twig\FeatureExtension:
         tags:
             - { name: twig.extension }
