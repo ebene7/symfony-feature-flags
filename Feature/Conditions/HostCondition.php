@@ -22,11 +22,10 @@ class HostCondition extends AbstractCondition
      */
     public function __construct($hosts)
     {
-        if (is_string($hosts)) {
-            $this->hosts = [$hosts];
-        }
-        
+        $this->hosts = is_string($hosts) ? [$hosts] : $hosts;
+
         if (!is_array($this->hosts)) {
+            echo '#' . gettype($this->hosts) . '#';
             throw new InvalidArgumentException();
         }
     }
