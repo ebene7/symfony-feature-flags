@@ -2,6 +2,7 @@
 
 namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
+use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\HostCondition;
 use InvalidArgumentException;
 
@@ -26,9 +27,12 @@ class HostConditionTest extends ConditionTestCase
             $this->expectException($expected['exception']);
         }
 
-        $condition = new HostCondition($input['hosts']);
+        $condition = new HostCondition($input['hostnames']);
+        $context = new Context(['hostname' => $input['hostname']]);
 
-        $this->assertInstanceOf(HostCondition::class, $condition);
+        $this->assertEquals($expected['match'], $condition->vote($context));
+
+//        $this->assertInstanceOf(HostCondition::class, $condition);
     }
 
     /**
@@ -38,15 +42,27 @@ class HostConditionTest extends ConditionTestCase
     {
         return [
             'string-parameter' => [
-                [ 'hosts' => 'http://example.com' ],
-                [ 'exception' => null ]
+                [
+                    'hostname' => 'example.com',
+                    'hostnames' => 'example.com',
+                ],
+                [
+                    'match' => true,
+                    'exception' => null,
+                ]
             ],
             'array-parameter' => [
-                [ 'hosts' => [ 'http://example.com',  'http://sub.example.com' ] ],
-                [ 'exception' => null ]
+                [
+                    'hostname' => 'http://sub.example.com',
+                    'hostnames' => [ 'example.com',  '*.example.com' ]
+                ],
+                [
+                    'match' => true,
+                    'exception' => null
+                ]
             ],
             'number-parameter' => [
-                [ 'hosts' => 42 ],
+                [ 'hostnames' => 42 ],
                 [ 'exception' => InvalidArgumentException::class ]
             ],
         ];

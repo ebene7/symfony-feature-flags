@@ -42,14 +42,16 @@ class HostCondition extends AbstractCondition
      */
     protected function doVote(ContextInterface $context)
     {
-        //$hostname = $context->get('hostname');
-
         foreach ($this->hostnames as $hostname) {
             $pattern = '/' . str_replace('*', '(.*)', $hostname) . '/';
 
-            preg_match($pattern, $context->get('hostname'));
+            echo "#$pattern#\n";
+
+            if ((bool) preg_match($pattern, $context->get('hostname'))) {
+                return true;
+            }
         }
 
-
+        return false;
     }
 }

@@ -19,7 +19,9 @@ class Context implements ContextInterface
      */
     public function __construct(array $data) 
     {
-        ;
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
@@ -27,15 +29,17 @@ class Context implements ContextInterface
      */
     public function set($key, $value)
     {
-        $this->data[$key] = value;
+        $this->data[$key] = $value;
+
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function get(string $key)
+    public function get(string $key, $default = null)
     {
-        $value = $this->data[$key];
+        $value = !empty($this->data[$key]) ? $this->data[$key] : $default;
         
         return $value instanceof ProviderInterface
             ? $value->get($key)
