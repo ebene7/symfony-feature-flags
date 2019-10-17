@@ -12,20 +12,19 @@ use InvalidArgumentException;
 class HostCondition extends AbstractCondition
 {
     /** @var array */
-    private $hosts;
+    private $hostnames;
     
     /**
      * Constructor
      * 
-     * @param array|string $hosts
+     * @param array|string $hostnames
      * @throws InvalidArgumentException
      */
-    public function __construct($hosts)
+    public function __construct($hostnames)
     {
-        $this->hosts = is_string($hosts) ? [$hosts] : $hosts;
+        $this->hostnames = is_string($hostnames) ? [$hostnames] : $hostnames;
 
-        if (!is_array($this->hosts)) {
-            echo '#' . gettype($this->hosts) . '#';
+        if (!is_array($this->hostnames)) {
             throw new InvalidArgumentException();
         }
     }
@@ -38,8 +37,19 @@ class HostCondition extends AbstractCondition
         return 'host';
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function doVote(ContextInterface $context)
     {
-        
+        //$hostname = $context->get('hostname');
+
+        foreach ($this->hostnames as $hostname) {
+            $pattern = '/' . str_replace('*', '(.*)', $hostname) . '/';
+
+            preg_match($pattern, $context->get('hostname'));
+        }
+
+
     }
 }
