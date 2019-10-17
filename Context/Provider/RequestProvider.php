@@ -2,6 +2,8 @@
 
 namespace E7\FeatureFlagsBundle\Context\Provider;
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Class RequestProvider
  */
@@ -14,7 +16,7 @@ class RequestProvider implements ProviderInterface
      * 
      * @param Request $request
      */
-    public function __construct($request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }

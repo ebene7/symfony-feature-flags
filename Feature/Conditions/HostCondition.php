@@ -45,8 +45,6 @@ class HostCondition extends AbstractCondition
         foreach ($this->hostnames as $hostname) {
             $pattern = '/' . str_replace('*', '(.*)', $hostname) . '/';
 
-            echo "#$pattern#\n";
-
             if ((bool) preg_match($pattern, $context->get('hostname'))) {
                 return true;
             }

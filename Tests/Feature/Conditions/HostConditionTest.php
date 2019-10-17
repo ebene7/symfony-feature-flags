@@ -8,6 +8,7 @@ use InvalidArgumentException;
 
 /**
  * Class HostConditionTest
+ * @package E7\FeatureFlagsBundle\Tests\Feature\Conditions
  */
 class HostConditionTest extends ConditionTestCase
 {
@@ -31,8 +32,6 @@ class HostConditionTest extends ConditionTestCase
         $context = new Context(['hostname' => $input['hostname']]);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
-
-//        $this->assertInstanceOf(HostCondition::class, $condition);
     }
 
     /**

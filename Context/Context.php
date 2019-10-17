@@ -17,7 +17,7 @@ class Context implements ContextInterface
      * 
      * @param array $data
      */
-    public function __construct(array $data) 
+    public function __construct(array $data = [])
     {
         foreach ($data as $key => $value) {
             $this->set($key, $value);
