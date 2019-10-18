@@ -4,6 +4,7 @@ services:
         autoconfigure: true
 
     E7\FeatureFlagsBundle\Context\Context:
+        public: true
 
     e7_feature_context:
         alias: E7\FeatureFlagsBundle\Feature\FeatureBox
@@ -12,7 +13,8 @@ services:
     E7\FeatureFlagsBundle\Feature\FeatureBox:
         public: true
         arguments:
-            - !tagged e7.feature_flag
+            - !tagged e7.feature_flag,
+            - '@E7\FeatureFlagsBundle\Context\Context'
 
     e7_feature_flags:
         alias: E7\FeatureFlagsBundle\Feature\FeatureBox
