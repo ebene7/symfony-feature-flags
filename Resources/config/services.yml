@@ -19,5 +19,7 @@ services:
 
     # Twig
     E7\FeatureFlagsBundle\Twig\FeatureExtension:
+        arguments:
+            - '@e7_feature_flags'
         tags:
             - { name: twig.extension }
