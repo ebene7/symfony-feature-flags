@@ -12,9 +12,11 @@ use InvalidArgumentException;
  */
 class HostConditionTest extends ConditionTestCase
 {
-    public function testToStringConversion()
+    public function testMagicMethodToString()
     {
-        $this->doTestToStringConversion(new HostCondition('http://example.com'));
+        $condition = new HostCondition('http://example.com');
+        $this->doTestMagicMethodToString($condition);
+        $this->doTestToStringConversion($condition);
     }
 
     /**
@@ -23,6 +25,41 @@ class HostConditionTest extends ConditionTestCase
      * @param array $expected
      */
     public function testConstructorWithException(array $input, array $expected)
+    {
+        if (null !== $expected['exception']) {
+            $this->expectException($expected['exception']);
+        }
+
+        $this->assertInstanceOf(HostCondition::class, new HostCondition($input['hostnames']));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerConstructorWithHostsParameter()
+    {
+        return [
+            'string-parameter' => [
+                [ 'hostnames' => 'example.com' ],
+                [ 'exception' => null ]
+            ],
+            'array-parameter' => [
+                [ 'hostnames' => [ 'example.com',  '*.example.com' ] ],
+                [ 'exception' => null ]
+            ],
+            'number-parameter' => [
+                [ 'hostnames' => 42 ],
+                [ 'exception' => InvalidArgumentException::class ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providerVote
+     * @param array $input
+     * @param array $expected
+     */
+    public function testVote(array $input, array $expected)
     {
         if (null !== $expected['exception']) {
             $this->expectException($expected['exception']);
@@ -37,22 +74,22 @@ class HostConditionTest extends ConditionTestCase
     /**
      * @return array
      */
-    public function providerConstructorWithHostsParameter()
+    public function providerVote()
     {
         return [
             'string-parameter' => [
                 [
                     'hostname' => 'example.com',
-                    'hostnames' => 'example.com',
+                    'hostnames' => 'example.com'
                 ],
                 [
                     'match' => true,
-                    'exception' => null,
+                    'exception' => null
                 ]
             ],
             'array-parameter' => [
                 [
-                    'hostname' => 'http://sub.example.com',
+                    'hostname' => 'sub.example.com',
                     'hostnames' => [ 'example.com',  '*.example.com' ]
                 ],
                 [
@@ -61,39 +98,15 @@ class HostConditionTest extends ConditionTestCase
                 ]
             ],
             'number-parameter' => [
-                [ 'hostnames' => 42 ],
-                [ 'exception' => InvalidArgumentException::class ]
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider providerVote
-     * @param array $input
-     * @param array $expected
-     */
-//    public function testVote(array $input, array $expected)
-//    {
-//        $condition = new HostCondition($input['hosts']);
-//        
-//        $this->assertInternalType('bool', $condition->vote($context));
-//    }
-
-    /**
-     * @return array
-     */
-    public function providerVote()
-    {
-        return [
-            'single_hostname' => [
                 [
-                    'hosts' => 'http://example.com',
-                    'context' => null,
+                    'hostname' => null,
+                    'hostnames' => 42
                 ],
                 [
-                    'result' => true,
+                    'match' => false,
+                    'exception' => InvalidArgumentException::class
                 ]
-            ]
+            ],
         ];
     }
 }

@@ -3,16 +3,14 @@
 namespace E7\FeatureFlagsBundle\Feature\Conditions;
 
 use ArrayIterator;
-use Countable;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
-use IteratorAggregate;
 use Traversable;
 
 /**
  * Class ChainCondition
  * @package E7\FeatureFlagsBundle\Feature\Conditions
  */
-class ChainCondition extends AbstractCondition implements IteratorAggregate, Countable
+class ChainCondition extends AbstractCondition implements ChainConditionInterface
 {
     /** @var array */
     private $conditions = [];

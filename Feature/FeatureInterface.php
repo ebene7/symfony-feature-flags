@@ -11,6 +11,11 @@ use E7\FeatureFlagsBundle\Context\ContextInterface;
 interface FeatureInterface
 {
     /**
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * @return boolean
      */
     public function isEnabled(ContextInterface $context);

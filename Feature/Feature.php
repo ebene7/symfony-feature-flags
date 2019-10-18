@@ -5,6 +5,7 @@ namespace E7\FeatureFlagsBundle\Feature;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
 use E7\FeatureFlagsBundle\Feature\Conditions\ChainCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface;
+use InvalidArgumentException;
 
 /**
  * Class Feature
@@ -32,6 +33,10 @@ class Feature implements FeatureInterface
         ChainCondition $conditions = null,
         FeatureInterface $parent = null
     ) {
+        if (empty($name)) {
+            throw new InvalidArgumentException('Parameter $name must not be empty.');
+        }
+
         $this->name = $name;
         $this->conditions = $conditions ?: new ChainCondition();
         $this->parent = $parent;
@@ -48,7 +53,7 @@ class Feature implements FeatureInterface
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

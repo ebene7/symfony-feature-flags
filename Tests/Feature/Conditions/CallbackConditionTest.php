@@ -12,9 +12,11 @@ use InvalidArgumentException;
  */
 class CallbackConditionTest extends ConditionTestCase
 {
-    public function testToStringConversion()
+    public function testMagicMethodToString()
     {
-        $this->doTestToStringConversion(new CallbackCondition(function() {}));
+        $condition = new CallbackCondition(function() {});
+        $this->doTestMagicMethodToString($condition);
+        $this->doTestToStringConversion($condition);
     }
     
     /**

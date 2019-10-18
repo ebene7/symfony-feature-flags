@@ -11,9 +11,11 @@ use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
  */
 class BooleanConditionTest extends ConditionTestCase
 {
-    public function testToStringConversion()
+    public function testMagicMethodToString()
     {
-        $this->doTestToStringConversion(new BooleanCondition(true));
+        $condition = new BooleanCondition(true);
+        $this->doTestMagicMethodToString($condition);
+        $this->doTestToStringConversion($condition);
     }
 
     /**

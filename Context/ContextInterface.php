@@ -13,13 +13,13 @@ interface ContextInterface
      * @return ContextInterface
      */
     public function set($key, $value);
-    
+
     /**
      * @param string $key
      * @return mixed
      */
     public function get(string $key);
-    
+
     /**
      * @param string $key
      * @return boolean

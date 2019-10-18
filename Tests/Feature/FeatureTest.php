@@ -4,16 +4,22 @@ namespace E7\FeatureFlagsBundle\Tests\Feature;
 
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureInterface;
+use E7\PHPUnit\Traits\OopTrait;
+use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class FeatureTest
+ * @package E7\FeatureFlagsBundle\Tests\Feature
  */
 class FeatureTest extends TestCase
 {
+    use OopTrait;
+
     public function testInstanceOfFeatureInterface()
     {
-        $this->assertTrue(new Feature('', null) instanceof FeatureInterface);
+        $this->assertTrue(new Feature('awesome-feature', null) instanceof FeatureInterface);
     }
 
     public function testConstructorPassesParameters()
@@ -27,6 +33,19 @@ class FeatureTest extends TestCase
         // test
         $this->assertEquals($name, $feature->getName());
         $this->assertSame($parent, $feature->getParent());
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructorThrowsExceptionWithEmptyName()
+    {
+        new Feature('');
+    }
+
+    public function testMagicMethodToString()
+    {
+        $this->doTestMagicMethodToString(new Feature('awesome-feature'));
     }
 
     public function testToStringConversion()
