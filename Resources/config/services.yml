@@ -1,4 +1,19 @@
 services:
+    
+    # commands
+    E7\FeatureFlagsBundle\Command\ListFeaturesCommand:
+        public: true
+        arguments:
+            - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
+        tags:
+            - { name: 'console.command', command: 'ebene7:feature_flags:list' }
+            
+    E7\FeatureFlagsBundle\Command\DebugFeatureCommand:
+        public: true
+        arguments:
+            - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
+        tags:
+            - { name: 'console.command', command: 'ebene7:feature_flags:debug' }        
 
     E7\FeatureFlagsBundle\Context\Context:
         public: true

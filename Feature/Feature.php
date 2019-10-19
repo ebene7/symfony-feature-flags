@@ -69,6 +69,19 @@ class Feature implements FeatureInterface
         return $this;
     }
 
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasConditions()
+    {
+        return 0 < count($this->conditions);
+    }
+
     /**
      * @return FeatureInterface
      */
