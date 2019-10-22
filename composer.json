@@ -1,6 +1,7 @@
 {
     "name": "ebene7/symfony-feature-flags-bundle",
     "description": "E7 Symfony Feature Flags Bundle",
+    "keywords": ["symfony", "symfony3", "bundle", "feature flags", "configuration"],
     "homepage": "https://github.com/ebene7/symfony-feature-flags-bundle",
     "license": "MIT",
     "authors": [
