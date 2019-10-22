@@ -1,5 +1,5 @@
 services:
-    
+
     # commands
     E7\FeatureFlagsBundle\Command\ListFeaturesCommand:
         public: true
@@ -7,7 +7,7 @@ services:
             - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
         tags:
             - { name: 'console.command', command: 'ebene7:feature_flags:list' }
-            
+
     E7\FeatureFlagsBundle\Command\DebugFeatureCommand:
         public: true
         arguments:
@@ -18,19 +18,25 @@ services:
     E7\FeatureFlagsBundle\Context\Context:
         public: true
 
-    e7_feature_context:
-        alias: E7\FeatureFlagsBundle\Feature\FeatureBox
+    E7\FeatureFlagsBundle\Feature\FeatureBoxBuilder:
         public: true
+        arguments:
+            $container: '@service_container'
 
     E7\FeatureFlagsBundle\Feature\FeatureBox:
         public: true
-        arguments:
-            - !tagged e7.feature_flag,
-            - '@E7\FeatureFlagsBundle\Context\Context'
+        factory: ['@E7\FeatureFlagsBundle\Feature\FeatureBoxBuilder', 'buildFromConfig']
+#        arguments:
+#            - !tagged e7.feature_flag,
+#            - '@E7\FeatureFlagsBundle\Context\Context'
+#
+#    e7_feature_context:
+#        alias: E7\FeatureFlagsBundle\Feature\FeatureBox
+#        public: true
 
-    e7_feature_flags:
-        alias: E7\FeatureFlagsBundle\Feature\FeatureBox
-        public: true
+#    e7_feature_flags:
+#        alias: E7\FeatureFlagsBundle\Feature\FeatureBox
+#        public: true
 
     # Twig
     E7\FeatureFlagsBundle\Twig\FeatureExtension:
