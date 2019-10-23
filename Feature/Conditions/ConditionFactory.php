@@ -18,7 +18,7 @@ class ConditionFactory
      */
     public function create($type, array $config = [])
     {
-        print_r(func_get_args());
+//        print_r(func_get_args());
         
         $class = $this->guessClassName($type);
         $condition = null;
