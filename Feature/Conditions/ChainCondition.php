@@ -16,6 +16,17 @@ class ChainCondition extends AbstractCondition implements ChainConditionInterfac
     private $conditions = [];
 
     /**
+     * ChainCondition constructor.
+     * @param array $members
+     */
+    public function __construct(array $members = [])
+    {
+        foreach ($members as $condition) {
+            $this->addCondition($condition);
+        }
+    }
+
+    /**
      * @return string
      */
     public function getName()
