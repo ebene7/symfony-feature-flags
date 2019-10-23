@@ -29,6 +29,7 @@ class Context implements ContextInterface
      */
     public function set($key, $value)
     {
+        $key = $this->normalizeKey($key);
         $this->data[$key] = $value;
 
         return $this;
@@ -54,7 +55,18 @@ class Context implements ContextInterface
         $key = $this->normalizeKey($key);
         return !empty($this->data[$key]);
     }
-    
+
+    /**
+     * @inheritDoc
+     */
+    public function remove(string $key)
+    {
+        $key = $this->normalizeKey($key);
+        unset($this->data[$key]);
+
+        return $this;
+    }
+
     /**
      * Normalize $key value
      * 

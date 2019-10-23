@@ -51,6 +51,30 @@ class ContextTest extends TestCase
         $this->assertTrue(method_exists($context, 'get'));
         $this->assertSame($context, $context->set($key, $value));
         $this->assertEquals($value, $context->get($key));
+    }
 
+    public function testHas()
+    {
+        $key = 'key-' . rand(0, 9999);
+        $value = 'value-' . rand(0, 9999);
+        $context = new Context([]);
+
+        $this->assertFalse($context->has($key));
+        $context->set($key, $value);
+        $this->assertTrue($context->has($key));
+    }
+
+    public function testRemove()
+    {
+        $key = 'key-' . rand(0, 9999);
+        $value = 'value-' . rand(0, 9999);
+        $context = new Context([]);
+
+        $this->assertFalse($context->has($key));
+        $context->set($key, $value);
+        $this->assertTrue($context->has($key));
+
+        $this->assertSame($context, $context->remove($key));
+        $this->assertFalse($context->has($key));
     }
 }

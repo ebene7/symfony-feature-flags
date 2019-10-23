@@ -25,4 +25,10 @@ interface ContextInterface
      * @return boolean
      */
     public function has(string $key);
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function remove(string $key);
 }
