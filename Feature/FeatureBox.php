@@ -85,6 +85,7 @@ class FeatureBox implements IteratorAggregate, Countable
 
     /**
      * @param $name
+     * @return bool
      */
     public function isEnabled($name)
     {
