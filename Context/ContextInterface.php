@@ -28,7 +28,7 @@ interface ContextInterface
 
     /**
      * @param string $key
-     * @return mixed
+     * @return ContextInterface
      */
-    public function remove(string $key);
+    public function remove(string ...$key);
 }

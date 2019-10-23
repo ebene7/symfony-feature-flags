@@ -77,4 +77,25 @@ class ContextTest extends TestCase
         $this->assertSame($context, $context->remove($key));
         $this->assertFalse($context->has($key));
     }
+
+    public function testRemoveMulti()
+    {
+        $key1 = 'key-' . rand(0, 9999);
+        $key2 = 'key-' . rand(0, 9999);
+        $value1 = 'value-' . rand(0, 9999);
+        $value2 = 'value-' . rand(0, 9999);
+
+        $context = new Context([]);
+
+        $this->assertFalse($context->has($key1));
+        $this->assertFalse($context->has($key2));
+        $context->set($key1, $value1);
+        $context->set($key2, $value2);
+        $this->assertTrue($context->has($key1));
+        $this->assertTrue($context->has($key1));
+
+        $this->assertSame($context, $context->remove($key1, $key2));
+        $this->assertFalse($context->has($key1));
+        $this->assertFalse($context->has($key2));
+    }
 }

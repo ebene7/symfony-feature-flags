@@ -59,10 +59,12 @@ class Context implements ContextInterface
     /**
      * @inheritDoc
      */
-    public function remove(string $key)
+    public function remove(string ...$key)
     {
-        $key = $this->normalizeKey($key);
-        unset($this->data[$key]);
+        foreach ($key as $k) {
+            $k = $this->normalizeKey($k);
+            unset($this->data[$k]);
+        }
 
         return $this;
     }
