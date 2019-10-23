@@ -95,7 +95,14 @@ class Feature implements FeatureInterface
      */
     public function isEnabled(ContextInterface $context)
     {
-        return $this->conditions->vote($context)
+        $context->set('feature', $this);
+        $context->set('feature.name', $this->getName());
+
+        $isEnabled = $this->conditions->vote($context)
             && (null !== $this->parent ? $this->parent->isEnabled($context) : true);
+
+        $context->remove('feature', 'feature.name');
+
+        return $isEnabled;
     }
 }

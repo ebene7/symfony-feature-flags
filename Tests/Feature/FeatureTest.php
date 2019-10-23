@@ -117,4 +117,20 @@ class FeatureTest extends TestCase
             ],
         ];
     }
+
+//    public function testIsEnabledPassesFeatureIntoContext()
+//    {
+//        // prepare
+//        $feature = new Feature('awesome-feature');
+//        $context = $this->getMockBuilder(Context::class)
+//            ->setMethods(['set', 'remove'])
+//            ->getMock();
+//
+//        $context->expects($this->any())->method('set')->with($this->$this->callback(function () { print_r(func_num_args()); return true; }));
+//
+//
+//        $context->expects($this->any())->method('remove')->with($this->callback(function () { print_r(func_get_args()); return true; }));
+//
+//        $this->assertInternalType('bool', $feature->isEnabled($context));
+//    }
 }
