@@ -2,6 +2,8 @@
 
 namespace E7\FeatureFlagsBundle\Tests\Feature;
 
+use E7\FeatureFlagsBundle\Context\Context;
+use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureInterface;
 use E7\PHPUnit\Traits\OopTrait;
@@ -59,5 +61,60 @@ class FeatureTest extends TestCase
     public function testIsEnabled()
     {
         $this->assertTrue(true);
+    }
+
+    public function testIsEnabledWithoutCondition()
+    {
+        $feature = new Feature('awesome-feature-without-condition');
+        $this->assertTrue($feature->isEnabled(new Context()));
+    }
+
+    /**
+     * @dataProvider providerIsEnabledWithParentFeature
+     * @param array $input
+     * @param array $expected
+     */
+    public function testIsEnabledWithParentFeature(array $input, array $expected)
+    {
+        // prepare
+        $parent = new Feature('parent-feature');
+        $parent->addCondition(new BooleanCondition($input['parent_flag']));
+
+        $child = new Feature('child-feature', null, $parent);
+        $child->addCondition(new BooleanCondition($input['child_flag']));
+
+        $context = new Context();
+
+        // test
+        $this->assertInternalType('bool', $parent->isEnabled($context));
+        $this->assertEquals($expected['parent_result'], $parent->isEnabled($context));
+
+        $this->assertInternalType('bool', $child->isEnabled($context));
+        $this->assertEquals($expected['child_result'], $child->isEnabled($context));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerIsEnabledWithParentFeature()
+    {
+        return [
+            'both-true' => [
+                [ 'parent_flag' => true, 'child_flag' => true ],
+                [ 'parent_result' => true, 'child_result' => true ]
+            ],
+            'both-false' => [
+                [ 'parent_flag' => false, 'child_flag' => false ],
+                [ 'parent_result' => false, 'child_result' => false ]
+            ],
+            'parent-true-child-false' => [
+                [ 'parent_flag' => true, 'child_flag' => false ],
+                [ 'parent_result' => true, 'child_result' => false ]
+            ],
+            'parent-false-child-true' => [
+                [ 'parent_flag' => false, 'child_flag' => true ],
+                [ 'parent_result' => false, 'child_result' => false ]
+            ],
+        ];
     }
 }
