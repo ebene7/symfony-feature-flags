@@ -5,10 +5,10 @@ namespace E7\FeatureFlagsBundle\Feature\Conditions;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
 
 /**
- * Class BooleanCondition
+ * Class BoolCondition
  * @package E7\FeatureFlagsBundle\Feature\Conditions
  */
-class BooleanCondition extends AbstractCondition
+class BoolCondition extends AbstractCondition
 {
     /** @var boolean */
     private $flag;
@@ -26,9 +26,9 @@ class BooleanCondition extends AbstractCondition
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getType(): string
     {
-        return 'boolean';
+        return 'bool';
     }
 
     /**

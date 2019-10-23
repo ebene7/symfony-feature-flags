@@ -69,6 +69,9 @@ class Feature implements FeatureInterface
         return $this;
     }
 
+    /**
+     * @return ChainCondition
+     */
     public function getConditions()
     {
         return $this->conditions;

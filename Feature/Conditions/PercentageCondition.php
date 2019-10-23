@@ -22,11 +22,11 @@ class PercentageCondition extends AbstractCondition
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function getName()
+    public function getType(): string
     {
-        // TODO: Implement getName() method.
+        return 'percentage';
     }
 
     /**

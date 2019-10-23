@@ -41,22 +41,22 @@ class FeatureBoxBuilder {
             : [];
         
         foreach ($config['features'] as $key => $featureConfig) {
-            if (is_numeric($key) && is_string($featureConfig)) {
-                // name = $featureConfig
-                // type = bool
-                // flag = default
-                $condition = new Conditions\BooleanCondition($box->getDefaultState());
-                $feature = new Feature($featureConfig);
-                $feature->addCondition($condition);
-                $box->addFeature($feature);
-                continue;
-            }
+//            if (is_numeric($key) && is_string($featureConfig)) {
+//                // name = $featureConfig
+//                // type = bool
+//                // flag = default
+//                $condition = new Conditions\BooleanCondition($box->getDefaultState());
+//                $feature = new Feature($featureConfig);
+//                $feature->addCondition($condition);
+//                $box->addFeature($feature);
+//                continue;
+//            }
             
             if (is_string($key) && is_bool($featureConfig)) {
                 // name $key
                 // type = bool
                 // flag = $featureConfig
-                $condition = new Conditions\BooleanCondition($featureConfig);
+                $condition = new Conditions\BoolCondition($featureConfig);
                 $feature = new Feature($key);
                 $feature->addCondition($condition);
                 $box->addFeature($feature);
@@ -64,9 +64,14 @@ class FeatureBoxBuilder {
             }
 
             if (is_string($key) && is_array($featureConfig)) {
-                if (isset($featureConfig['enable'])) {
+//             print_r($featureConfig);
+                if (isset($featureConfig['enabled'])) {
                     // type = bool
                     // flag = value
+                    $feature = new Feature($key);
+                    $feature->addCondition(new Conditions\BoolCondition($featureConfig['enabled']));
+                    $box->addFeature($feature);
+                    continue;
                 }
 
                 if (empty($featureConfig['class']) && empty($featureConfig['type'])) {
@@ -84,6 +89,16 @@ class FeatureBoxBuilder {
                     continue;
                 }
             }
+            
+            if (is_string($key) && is_string($featureConfig)) {
+                $feature = new Feature($key);
+                if (empty($conditions[$featureConfig])) {
+                    throw new \Exception('Condition ' . $featureConfig . ' not found');
+                }
+                $feature->addCondition($conditions[$featureConfig]);
+                $box->addFeature($feature);
+                continue;
+            }
         }
 
         return $box;
@@ -99,10 +114,10 @@ class FeatureBoxBuilder {
     protected function prepareConditions(array $config)
     {
         $conditions = [];
-        
+
         foreach ($config as $name => $conditionConfig) {
             $class = !empty($conditionConfig['class']) ? $conditionConfig['class'] : null;
-            
+
             if (!empty($conditionConfig['type'])) {
                 if (null !== $class) {
                     // ingore! class before type... log or throw exception
@@ -110,15 +125,15 @@ class FeatureBoxBuilder {
                     $class = $this->guessConditionClassName($conditionConfig['type']);
                 }
             }
-            
+
             if (null === $class) {
                 throw new \Exception("Class $class does not exist.");
             }
-            
+
             // this is just for the dev draft
             $reflection = new \ReflectionClass($class);
             $condition = null;
-            
+
             if ($reflection->hasMethod('__construct')) {
                 $args = [];
                 foreach ($reflection->getMethod('__construct')->getParameters() as $parameter) {
@@ -133,7 +148,8 @@ class FeatureBoxBuilder {
             } else {
                 $condition = new $class();
             }
-            
+
+            $condition->setName($name);
             $conditions[$name] = $condition;
         }
         
@@ -147,6 +163,10 @@ class FeatureBoxBuilder {
     {
         $path = __DIR__ . '/Conditions/';
         $dir = new \DirectoryIterator($path);
+        
+        // hack: mapping, until classes renamed
+//        if ('bool' == strtolower($type)) { $type = 'boolean'; }
+//        if ('ip' == strtolower($type)) { $type = 'ipaddress'; }
         
         foreach ($dir as $name) {
             $pattern = '/(?P<type>[^Abstract].+)Condition\.(.+)/';

@@ -29,7 +29,7 @@ class ChainCondition extends AbstractCondition implements ChainConditionInterfac
     /**
      * @return string
      */
-    public function getName()
+    public function getType(): string
     {
         return 'chain';
     }

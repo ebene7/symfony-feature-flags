@@ -3,7 +3,6 @@
 namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
 use E7\FeatureFlagsBundle\Context\Context;
-use E7\FeatureFlagsBundle\Feature\Conditions\HostCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\PercentageCondition;
 
 /**
@@ -12,9 +11,16 @@ use E7\FeatureFlagsBundle\Feature\Conditions\PercentageCondition;
  */
 class PercentageConditionTest extends ConditionTestCase
 {
-    public function testToStringConversion()
+    public function testMagicMethodToString()
     {
-        $this->doTestToStringConversion(new PercentageCondition(0));
+        $condition = new PercentageCondition(50);
+        $this->doTestMagicMethodToString($condition);
+        $this->doTestToStringConversion($condition);
+    }
+
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new PercentageCondition(50), 'name');
     }
 
     public function testVote()

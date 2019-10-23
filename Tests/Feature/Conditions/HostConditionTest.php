@@ -19,6 +19,11 @@ class HostConditionTest extends ConditionTestCase
         $this->doTestToStringConversion($condition);
     }
 
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new HostCondition('*.example.com'), 'name');
+    }
+
     /**
      * @dataProvider providerConstructorWithHostsParameter
      * @param array $input
@@ -30,7 +35,7 @@ class HostConditionTest extends ConditionTestCase
             $this->expectException($expected['exception']);
         }
 
-        $this->assertInstanceOf(HostCondition::class, new HostCondition($input['hostnames']));
+        $this->assertInstanceOf(HostCondition::class, new HostCondition($input['hosts']));
     }
 
     /**
@@ -40,15 +45,15 @@ class HostConditionTest extends ConditionTestCase
     {
         return [
             'string-parameter' => [
-                [ 'hostnames' => 'example.com' ],
+                [ 'hosts' => 'example.com' ],
                 [ 'exception' => null ]
             ],
             'array-parameter' => [
-                [ 'hostnames' => [ 'example.com',  '*.example.com' ] ],
+                [ 'hosts' => [ 'example.com',  '*.example.com' ] ],
                 [ 'exception' => null ]
             ],
             'number-parameter' => [
-                [ 'hostnames' => 42 ],
+                [ 'hosts' => 42 ],
                 [ 'exception' => InvalidArgumentException::class ]
             ],
         ];
@@ -65,8 +70,8 @@ class HostConditionTest extends ConditionTestCase
             $this->expectException($expected['exception']);
         }
 
-        $condition = new HostCondition($input['hostnames']);
-        $context = new Context(['hostname' => $input['hostname']]);
+        $condition = new HostCondition($input['hosts']);
+        $context = new Context(['host' => $input['host']]);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
     }
@@ -79,8 +84,8 @@ class HostConditionTest extends ConditionTestCase
         return [
             'string-parameter' => [
                 [
-                    'hostname' => 'example.com',
-                    'hostnames' => 'example.com'
+                    'host' => 'example.com',
+                    'hosts' => 'example.com'
                 ],
                 [
                     'match' => true,
@@ -89,8 +94,8 @@ class HostConditionTest extends ConditionTestCase
             ],
             'array-parameter' => [
                 [
-                    'hostname' => 'sub.example.com',
-                    'hostnames' => [ 'example.com',  '*.example.com' ]
+                    'host' => 'sub.example.com',
+                    'hosts' => [ 'example.com',  '*.example.com' ]
                 ],
                 [
                     'match' => true,
@@ -99,8 +104,8 @@ class HostConditionTest extends ConditionTestCase
             ],
             'number-parameter' => [
                 [
-                    'hostname' => null,
-                    'hostnames' => 42
+                    'host' => null,
+                    'hosts' => 42
                 ],
                 [
                     'match' => false,

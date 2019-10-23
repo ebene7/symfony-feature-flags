@@ -4,7 +4,7 @@ namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
 use ArrayIterator;
 use Countable;
-use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ChainCondition;
 use IteratorAggregate;
 
@@ -14,6 +14,18 @@ use IteratorAggregate;
  */
 class ChainConditionTest extends ConditionTestCase
 {
+    public function testMagicMethodToString()
+    {
+        $condition = new BoolCondition(true);
+        $this->doTestMagicMethodToString($condition);
+        $this->doTestToStringConversion($condition);
+    }
+
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new ChainCondition(), 'name');
+    }
+
     /**
      * @dataProvider providerAddMemberConditionsViaConstructor
      * @param array $input
@@ -33,7 +45,7 @@ class ChainConditionTest extends ConditionTestCase
     {
         return [
             'with-two-valid-conditions' => [
-                [ 'members' => [ new BooleanCondition(true), new BooleanCondition(true) ] ],
+                [ 'members' => [ new BoolCondition(true), new BoolCondition(true) ] ],
                 []
             ],
         ];

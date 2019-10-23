@@ -3,11 +3,10 @@
 namespace E7\FeatureFlagsBundle\Tests\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
-use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureInterface;
 use E7\PHPUnit\Traits\OopTrait;
-use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -78,10 +77,10 @@ class FeatureTest extends TestCase
     {
         // prepare
         $parent = new Feature('parent-feature');
-        $parent->addCondition(new BooleanCondition($input['parent_flag']));
+        $parent->addCondition(new BoolCondition($input['parent_flag']));
 
         $child = new Feature('child-feature', null, $parent);
-        $child->addCondition(new BooleanCondition($input['child_flag']));
+        $child->addCondition(new BoolCondition($input['child_flag']));
 
         $context = new Context();
 

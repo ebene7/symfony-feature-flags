@@ -12,8 +12,13 @@ interface ConditionInterface
     /**
      * @return string
      */
-    public function getName();
-    
+    public function getName(): string;
+
+    /**
+     * @return string
+     */
+    public function getType(): string;
+
     /**
      * @return boolean
      */

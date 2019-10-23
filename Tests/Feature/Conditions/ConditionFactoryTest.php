@@ -3,7 +3,7 @@
 namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
 use E7\FeatureFlagsBundle\Context\Context;
-use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -39,45 +39,45 @@ class ConditionFactoryTest extends TestCase
         return [
             'create-bool-from-type-true' => [
                 [
-                    'type' => 'boolean',
+                    'type' => 'bool',
                     'config' => [ 'flag' => true ],
                     'context' => new Context(),
                 ],
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'vote_result' => true,
                 ]
             ],
             'create-bool-from-type-false' => [
                 [
-                    'type' => 'boolean',
+                    'type' => 'bool',
                     'config' => [ 'flag' => false ],
                     'context' => new Context(),
                 ],
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'vote_result' => false,
                 ]
             ],
             'create-bool-from-class-true' => [
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'config' => [ 'flag' => true ],
                     'context' => new Context(),
                 ],
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'vote_result' => true,
                 ]
             ],
             'create-bool-from-class-false' => [
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'config' => [ 'flag' => false ],
                     'context' => new Context(),
                 ],
                 [
-                    'type' => BooleanCondition::class,
+                    'type' => BoolCondition::class,
                     'vote_result' => false,
                 ]
             ],

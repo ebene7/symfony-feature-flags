@@ -6,10 +6,10 @@ use E7\FeatureFlagsBundle\Context\ContextInterface;
 use InvalidArgumentException;
 
 /**
- * Class IpAddressCondition
+ * Class IpCondition
  * @package E7\FeatureFlagsBundle\Feature\Conditions
  */
-class IpAddressCondition extends AbstractCondition
+class IpCondition extends AbstractCondition
 {
     const PATTERN_V4 = '/\d{1,3}|\*\.\d{1,3}|\*\.\d{1,3}|\*\.\d{1,3}|\*/';
     const PATTERN_V6 = '/[a-f0-9]{0,4}\:[a-f0-9]{0,4}\:[a-f0-9]{0,4}\:[a-f0-9]{0,4}\:'
@@ -46,9 +46,9 @@ class IpAddressCondition extends AbstractCondition
     /**
      * @inheritDoc
      */
-    public function getName(): string
+    public function getType(): string
     {
-        return 'ipaddr';
+        return 'ip';
     }
 
     /**
@@ -56,7 +56,7 @@ class IpAddressCondition extends AbstractCondition
      */
     protected function doVote(ContextInterface $context)
     {
-        $clientIp = $this->normalize($context->get('remote_addr'));
+        $clientIp = $this->normalize($context->get('client_ip'));
         
         foreach ($this->ips as $ip) {
             $pattern = '/' . str_replace(['.', '*'], ['\\.','(.*)'], $ip) . '/i';

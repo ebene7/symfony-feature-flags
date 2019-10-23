@@ -3,19 +3,24 @@
 namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
 use E7\FeatureFlagsBundle\Context\Context;
-use E7\FeatureFlagsBundle\Feature\Conditions\BooleanCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 
 /**
  * Class BooleanConditionTest
  * @package E7\FeatureFlagsBundle\Tests\Feature\Conditions
  */
-class BooleanConditionTest extends ConditionTestCase
+class BoolConditionTest extends ConditionTestCase
 {
     public function testMagicMethodToString()
     {
-        $condition = new BooleanCondition(true);
+        $condition = new BoolCondition(true);
         $this->doTestMagicMethodToString($condition);
         $this->doTestToStringConversion($condition);
+    }
+
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new BoolCondition(true), 'name');
     }
 
     /**
@@ -24,7 +29,7 @@ class BooleanConditionTest extends ConditionTestCase
      */
     public function testVote(bool $flag)
     {
-        $condition = new BooleanCondition($flag);
+        $condition = new BoolCondition($flag);
         $context = new Context([]);
         
         $this->assertEquals($flag, $condition->vote($context));

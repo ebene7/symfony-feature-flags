@@ -31,7 +31,7 @@ class CallbackCondition extends AbstractCondition
     /**
      * @inheritDoc
      */
-    public function getName(): string 
+    public function getType(): string
     {
         return 'callback';
     }

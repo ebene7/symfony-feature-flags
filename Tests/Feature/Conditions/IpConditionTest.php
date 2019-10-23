@@ -3,7 +3,7 @@
 namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 
 use E7\FeatureFlagsBundle\Context\Context;
-use E7\FeatureFlagsBundle\Feature\Conditions\IpAddressCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\IpCondition;
 use InvalidArgumentException;
 
 /**
@@ -11,17 +11,22 @@ use InvalidArgumentException;
  *
  * @package E7\FeatureFlagsBundle\Tests\Feature\Conditions
  */
-class IpAddressConditionTest extends ConditionTestCase
+class IpConditionTest extends ConditionTestCase
 {
     const IP_AS_LONG_192_168_1_0 = 3232235776;
     
     public function testMagicMethodToString()
     {
-        $condition = new IpAddressCondition('http://127.0.0.1');
+        $condition = new IpCondition('http://127.0.0.1');
         $this->doTestMagicMethodToString($condition);
         $this->doTestToStringConversion($condition);
     }
-    
+
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new IpCondition('192.168.0.*'), 'name');
+    }
+
     /**
      * @dataProvider providerConstructorWithHostsParameter
      * @param array $input
@@ -33,7 +38,7 @@ class IpAddressConditionTest extends ConditionTestCase
             $this->expectException($expected['exception']);
         }
 
-        $this->assertInstanceOf(IpAddressCondition::class, new IpAddressCondition($input['ips']));
+        $this->assertInstanceOf(IpCondition::class, new IpCondition($input['ips']));
     }
 
     /**
@@ -76,8 +81,8 @@ class IpAddressConditionTest extends ConditionTestCase
      */
     public function testVote(array $input, array $expected)
     {
-        $condition = new IpAddressCondition($input['ips']);
-        $context = new Context(['remote_addr' => $input['ip']]);
+        $condition = new IpCondition($input['ips']);
+        $context = new Context(['client_ip' => $input['ip']]);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
     }

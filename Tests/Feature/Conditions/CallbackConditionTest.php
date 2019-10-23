@@ -19,6 +19,11 @@ class CallbackConditionTest extends ConditionTestCase
         $this->doTestToStringConversion($condition);
     }
     
+    public function testSetAndGetName()
+    {
+        $this->doTestGetterAndSetter(new CallbackCondition(function(){}), 'name');
+    }
+
     /**
      * @dataProvider providerConstructorWithException
      * @param array $input
