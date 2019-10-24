@@ -118,18 +118,53 @@ class FeatureTest extends TestCase
         ];
     }
 
-    public function testIsEnabledPassesFeatureIntoContext()
+    /**
+     * @dataProvider providerIsEnabledPassesFeatureIntoContext
+     * @param array $input
+     * @param array $expected
+     */
+    public function testIsEnabledPassesFeatureIntoContext(array $input, array $expected)
     {
         // prepare
-        $feature = new Feature('awesome-feature');
+        $feature = new Feature($input['feature_name']);
+        $condition = new FeatureCondition($input['name']);
+        $feature->addCondition($condition);
         $context = new Context();
 
-        $condition = new FeatureCondition('awesome-feature24');
-        $feature->addCondition($condition);
+        // test
+        $this->assertFalse($context->has('feature'));
+        $this->assertEquals($expected['match'], $feature->isEnabled($context));
+        $this->assertFalse($context->has('feature'));
+    }
 
-        $this->assertInternalType('bool', $feature->isEnabled($context));
+    /**
+     * @return array
+     */
+    public function providerIsEnabledPassesFeatureIntoContext()
+    {
+        return [
+            'names-matches' => [
+                [ 'feature_name' => 'awesome-feature', 'name' => 'awesome-feature' ],
+                [ 'match' => true ]
+            ],
+            'names-does-not-match' => [
+                [ 'feature_name' => 'awesome-feature', 'name' => 'another-awesome-feature' ],
+                [ 'match' => false ]
+            ],
+            'name-match.regex' => [
+                [ 'feature_name' => 'awesome-feature', 'name' => '*-feature' ],
+                [ 'match' => true ]
+            ],
+        ];
     }
 }
+
+
+
+
+
+
+
 
 class Collector {
     private $data = [];
