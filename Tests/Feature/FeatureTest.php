@@ -4,6 +4,7 @@ namespace E7\FeatureFlagsBundle\Tests\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
+use E7\FeatureFlagsBundle\Feature\Conditions\FeatureCondition;
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureInterface;
 use E7\PHPUnit\Traits\OopTrait;
@@ -121,24 +122,11 @@ class FeatureTest extends TestCase
     {
         // prepare
         $feature = new Feature('awesome-feature');
-        $context = $this->getMockBuilder(Context::class)
-            ->setMethods(['set', 'remove'])
-            ->getMock();
+        $context = new Context();
 
-        $c = new Collector();
-    $x = 41;
-        $cb = function () use ($c, &$x) { $x = 42; /* file_put_contents(sys_get_temp_dir() . '/a2', json_encode(func_get_args()), FILE_APPEND);*/ };
+        $condition = new FeatureCondition('awesome-feature24');
+        $feature->addCondition($condition);
 
-        $context->expects($this->any())->method('set')
-//            ->with($this->callback(function () { print_r(func_get_args()); return true; }))
-            ->will($this->returnCallback(function() use (&$x) { $x++; }));
-
-
-//        $context->expects($this->any())->method('remove')
-////            ->with($this->callback(function () { print_r(func_get_args()); return true; }))
-//            ->will($this->returnCallback($cb));
-
-        echo "DATA $x #";
         $this->assertInternalType('bool', $feature->isEnabled($context));
     }
 }
