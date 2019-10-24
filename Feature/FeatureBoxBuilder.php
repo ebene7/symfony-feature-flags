@@ -1,28 +1,28 @@
 <?php
 
-/*
- * e7_feature_flags:
- *      default: true
- *      features:
- *          foo: true
- *          bar: true
- *          bazz: [onlysub]
- *          bamm: onlysub
- *      conditions:
- *          onlysub:
- *              type[/class]: host
- *              hostnames: blog.example.com
- */
-
 namespace E7\FeatureFlagsBundle\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
+use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
 
 /**
  * Class FeatureBoxBuilder
  * @package E7\FeatureFlagsBundle\Feature
  */
-class FeatureBoxBuilder {
+class FeatureBoxBuilder
+{
+    /** @var ConditionFactory */
+    private $conditionFactory;
+
+    /**
+     * Constructor
+     *
+     * @param ConditionFactory $factory
+     */
+    public function __construct(ConditionFactory $factory)
+    {
+        $this->conditionFactory = $factory;
+    }
 
     /**
      * @param array $config
@@ -33,44 +33,24 @@ class FeatureBoxBuilder {
     {
         $box = new FeatureBox([], new Context());
         $box->setDefaultState(empty($config['default']) ? true : (bool) $config['default']);
-        
+        $factory = $this->conditionFactory;
+
         $features = [];
-        
+
         $conditions = !empty($config['conditions']) 
             ? $this->prepareConditions($config['conditions']) 
             : [];
-        
+
         foreach ($config['features'] as $key => $featureConfig) {
-//            if (is_numeric($key) && is_string($featureConfig)) {
-//                // name = $featureConfig
-//                // type = bool
-//                // flag = default
-//                $condition = new Conditions\BooleanCondition($box->getDefaultState());
-//                $feature = new Feature($featureConfig);
-//                $feature->addCondition($condition);
-//                $box->addFeature($feature);
-//                continue;
-//            }
-            
+
             if (is_string($key) && is_bool($featureConfig)) {
-                // name $key
-                // type = bool
-                // flag = $featureConfig
-                $condition = new Conditions\BoolCondition($featureConfig);
-                $feature = new Feature($key);
-                $feature->addCondition($condition);
-                $box->addFeature($feature);
+                $this->addFeatureWithFlag($box, $key, $featureConfig);
                 continue;
             }
 
             if (is_string($key) && is_array($featureConfig)) {
-//             print_r($featureConfig);
                 if (isset($featureConfig['enabled'])) {
-                    // type = bool
-                    // flag = value
-                    $feature = new Feature($key);
-                    $feature->addCondition(new Conditions\BoolCondition($featureConfig['enabled']));
-                    $box->addFeature($feature);
+                    $this->addFeatureWithFlag($box, $key, $featureConfig['enabled']);
                     continue;
                 }
 
@@ -127,7 +107,7 @@ class FeatureBoxBuilder {
             }
 
             if (null === $class) {
-                throw new \Exception("Class $class does not exist.");
+                throw new \Exception("Class does not exist.");
             }
 
             // this is just for the dev draft
@@ -164,10 +144,6 @@ class FeatureBoxBuilder {
         $path = __DIR__ . '/Conditions/';
         $dir = new \DirectoryIterator($path);
         
-        // hack: mapping, until classes renamed
-//        if ('bool' == strtolower($type)) { $type = 'boolean'; }
-//        if ('ip' == strtolower($type)) { $type = 'ipaddress'; }
-        
         foreach ($dir as $name) {
             $pattern = '/(?P<type>[^Abstract].+)Condition\.(.+)/';
             
@@ -179,5 +155,16 @@ class FeatureBoxBuilder {
             }
         }
         return null;
+    }
+    
+    protected function addFeatureWithFlag($box, $name, $flag)
+    {
+        $factory = $this->conditionFactory;
+        
+        $feature = new Feature($name);
+        $feature->addCondition($factory->create('bool', $flag));
+        $box->addFeature($feature);
+        
+        return $this;
     }
 }

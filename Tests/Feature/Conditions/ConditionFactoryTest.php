@@ -5,6 +5,7 @@ namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
+use E7\PHPUnit\Traits\OopTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,6 +14,37 @@ use PHPUnit\Framework\TestCase;
  */
 class ConditionFactoryTest extends TestCase
 {
+    use OopTrait;
+
+    /**
+     * @dataProvider provideMagicCall
+     * @param array $input
+     * @param array $expected
+     */
+    public function testMagicCall(array $input, array $expected)
+    {
+        $factory = new ConditionFactory();
+        $method = 'create' . $input['type'];
+
+        $this->assertObjectHasMethod('__call', $factory);
+
+        $condition = call_user_func_array([$factory, $method], $input['arguments']);
+        $this->assertInstanceOf($expected['class'], $condition);
+    }
+
+    /**
+     * @return array
+     */
+    public function provideMagicCall()
+    {
+        return [
+            'test-with-bool' => [
+                [ 'type' => 'bool', 'arguments' => [ true ] ],
+                [ 'class' => BoolCondition::class ]
+            ]
+        ];
+    }
+
     /**
      * @dataProvider providerCreate
      * @param array $input
@@ -23,10 +55,10 @@ class ConditionFactoryTest extends TestCase
         if (!empty($expected['exception'])) {
             $this->expectException($expected['exception']);
         }
-        
+
         $factory = new ConditionFactory();
-        $condition = $factory->create($input['type'], $input['config']);
-        
+        $condition = $factory->create2($input['type'], $input['config']);
+
         $this->assertInstanceOf($expected['type'], $condition);
         $this->assertEquals($expected['vote_result'], $condition->vote($input['context']));
     }

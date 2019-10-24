@@ -5,6 +5,7 @@ namespace E7\FeatureFlagsBundle\Tests\Feature;
 use ArrayIterator;
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
+use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureBox;
 use PHPUnit\Framework\TestCase;

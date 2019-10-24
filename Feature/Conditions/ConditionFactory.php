@@ -8,6 +8,37 @@ namespace E7\FeatureFlagsBundle\Feature\Conditions;
  */
 class ConditionFactory
 {
+    public function __call($method, array $args)
+    {
+        $pattern = '/^create(?P<type>.*)$/';
+
+        if (!preg_match($pattern, $method, $match)) {
+            throw new \Exception('Method does not exist');
+        }
+
+        array_unshift($args, $match['type']);
+        return call_user_func_array([$this, 'create'], $args);
+    }
+
+    public function create($type, ...$config)
+    {
+        $class = $this->guessClassName($type);
+
+        if (!class_exists($class)) {
+            throw new \Exception('Condition does not exist or does not implement ConditionInterface');
+        }
+
+        $reflection = new \ReflectionClass($class);
+
+        if (empty($config) || !$reflection->hasMethod('__construct')) {
+            $condition = new $class();
+        } else {
+            $condition = $reflection->newInstanceArgs($config);
+        }
+
+        return $condition;
+    }
+
     /**
      * Factory method
      * 
@@ -16,10 +47,10 @@ class ConditionFactory
      * @return \E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface
      * @throws \Exception
      */
-    public function create($type, array $config = [])
+    public function create2($type, array $config = [])
     {
 //        print_r(func_get_args());
-        
+
         $class = $this->guessClassName($type);
         $condition = null;
         
