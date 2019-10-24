@@ -35,12 +35,7 @@ class FeatureCondition extends AbstractCondition
      */
     protected function doVote(ContextInterface $context)
     {
-        $pattern = '/' . str_replace('*', '(.*)', $this->featureName) . '/';
-        $r =  (bool) preg_match($pattern, $context->get('feature')->getName(), $match);
-
-        echo "TN=" . $this->featureName . " CN=" . $context->get('feature')->getName() . ' PAT=' . $pattern;
-        print_r($match);
-
-        return $r;
+        $pattern = '/^' . str_replace('*', '(.*)', $this->featureName) . '$/';
+        return (bool) preg_match($pattern, $context->get('feature')->getName());
     }
 }
