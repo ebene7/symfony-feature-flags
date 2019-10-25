@@ -4,6 +4,7 @@ namespace E7\FeatureFlagsBundle\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
+use E7\FeatureFlagsBundle\Profiler\ProfileInterface;
 
 /**
  * Class FeatureBoxBuilder
@@ -14,14 +15,18 @@ class FeatureBoxBuilder
     /** @var ConditionFactory */
     private $conditionFactory;
 
+    private $profile;
+
     /**
      * Constructor
      *
      * @param ConditionFactory $factory
+     * @param ProfileInterface $profile
      */
-    public function __construct(ConditionFactory $factory)
+    public function __construct(ConditionFactory $factory, ProfileInterface $profile)
     {
         $this->conditionFactory = $factory;
+        $this->profile = $profile;
     }
 
     /**
@@ -31,7 +36,7 @@ class FeatureBoxBuilder
      */
     public function buildFromConfig(array $config)
     {
-        $box = new FeatureBox([], new Context());
+        $box = new FeatureBox([], new Context(), $this->profile);
         $box->setDefaultState(empty($config['default']) ? true : (bool) $config['default']);
         $factory = $this->conditionFactory;
 

@@ -8,6 +8,8 @@ use E7\FeatureFlagsBundle\Context\ContextInterface;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
 use E7\FeatureFlagsBundle\Feature\Feature;
 use E7\FeatureFlagsBundle\Feature\FeatureBox;
+use E7\FeatureFlagsBundle\Profiler\NullProfile;
+use E7\FeatureFlagsBundle\Profiler\ProfileInterface;
 use PHPUnit\Framework\TestCase;
 use E7\PHPUnit\Traits\OopTrait;
 
@@ -19,6 +21,15 @@ class FeatureBoxTest extends TestCase
 {
     use OopTrait;
     
+    public function testGetProfileWithDefaultProfile()
+    {
+        $featureBox = $this->createFeatureBox();
+
+        $this->assertObjectHasMethod('getProfile', $featureBox);
+        $this->assertInstanceOf(ProfileInterface::class, $featureBox->getProfile());
+        $this->assertInstanceOf(NullProfile::class, $featureBox->getProfile());
+    }
+
     /**
      * @dataProvider providerDefaultState
      * @param boolean $state
@@ -27,10 +38,10 @@ class FeatureBoxTest extends TestCase
     {
         $featureBox = $this->createFeatureBox();
         $featureBox->setDefaultState($state);
-        
+
         $this->assertEquals($state, $featureBox->isEnabled('unknown-feature'));
     }
-    
+
     /**
      * @dataProvider providerDefaultState
      * @param boolean $state
@@ -38,7 +49,7 @@ class FeatureBoxTest extends TestCase
     public function testSetterAndGetterDefaultState(bool $state)
     {
         $featureBox = $this->createFeatureBox();
-        
+
         // initial default state is false
         $this->assertFalse($featureBox->getDefaultState());
         $this->assertFalse($featureBox->isEnabled('unknown-feature'));

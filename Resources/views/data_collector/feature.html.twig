@@ -1,0 +1,74 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% set icon %}
+        <span class="icon"><!img src="..." alt=""/></span>
+        <span class="sf-toolbar-value">{{ collector.featurecount }}</span>
+        <span class="sf-toolbar-label">Features</span>
+    {% endset %}
+
+    {% set text %}
+        {# this is the content displayed when hovering the mouse over
+           the toolbar panel #}
+        <div class="sf-toolbar-info-piece">
+            <b>Total:</b>
+            <span class="sf-toolbar-status">{{ collector.featurecount }}</span>
+        </div>
+
+        <div class="sf-toolbar-info-piece">
+            <b>Hits:</b>
+            <span class="sf-toolbar-status">{{ collector.hits|length }}</span>
+        </div>
+    {% endset %}
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon"><!img src="" alt=""/></span>
+        <strong>Feature Flags</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Feature Flags</h2>
+
+    <h3>Hits</h3>
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Configured</th>
+            <th>Parent</th>
+            <th>isEnabled</th>
+            <th>Hits</th>
+        </tr>
+
+        {% for hit in collector.hits %}
+            <tr>
+                <td>{{ hit.name }}</td>
+                <td>{{ hit.exists }}</td>
+                <td>{{ hit.parent }}</td>
+                <td>{{ hit.is_enabled }}</td>
+                <td>{{ hit.count }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Configured Features</h3>
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Parent</th>
+            <th>Conditions</th>
+        </tr>
+
+        {% for feature in collector.features %}
+            <tr>
+                <td>{{ feature.name }}</td>
+                <td>{{ feature.parent }}</td>
+                <td>{{ feature.conditions }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

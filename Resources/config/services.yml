@@ -9,6 +9,8 @@ services:
         public: true
 
     E7\FeatureFlagsBundle\Feature\FeatureBoxBuilder:
+        arguments:
+            $profile: '@E7\FeatureFlagsBundle\Profiler\Profile'
         public: true
 
     E7\FeatureFlagsBundle\Feature\FeatureBox:
@@ -33,6 +35,19 @@ services:
             - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
         tags:
             - { name: 'console.command', command: 'ebene7:feature_flags:list', alias: 'Bammm' }
+
+    # Profiler
+    E7\FeatureFlagsBundle\DataCollector\FeatureCollector:
+        arguments:
+            - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
+        tags:
+            -
+                name:     data_collector
+                template: '@E7FeatureFlags/data_collector/feature.html.twig'
+                id:       'e7.feature_flags_bundle.collector'
+        public: false
+
+    E7\FeatureFlagsBundle\Profiler\Profile:
 
     # Twig
     E7\FeatureFlagsBundle\Twig\FeatureExtension:

@@ -5,6 +5,8 @@ namespace E7\FeatureFlagsBundle\Feature;
 use ArrayIterator;
 use Countable;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
+use E7\FeatureFlagsBundle\Profiler\NullProfile;
+use E7\FeatureFlagsBundle\Profiler\ProfileInterface;
 use IteratorAggregate;
 
 /**
@@ -19,6 +21,9 @@ class FeatureBox implements IteratorAggregate, Countable
     /** @var ContextInterface */
     private $context;
 
+    /** @var ProfileInterface */
+    private $profile;
+
     /** @var boolean */
     private $defaultState = false;
 
@@ -31,6 +36,7 @@ class FeatureBox implements IteratorAggregate, Countable
     public function __construct(
         $features,
         ContextInterface $context,
+        ProfileInterface $profile = null,
         array $options = []
     ) {
         foreach ($features as $feature) {
@@ -38,6 +44,7 @@ class FeatureBox implements IteratorAggregate, Countable
         }
 
         $this->context = $context;
+        $this->profile = $profile ?: new NullProfile();
     }
 
     /**
@@ -65,6 +72,14 @@ class FeatureBox implements IteratorAggregate, Countable
     }
 
     /**
+     * @return ProfileInterface
+     */
+    public function getProfile()
+    {
+        return $this->profile;
+    }
+
+    /**
      * @param bool $state
      * @return FeatureBox
      */
@@ -89,9 +104,12 @@ class FeatureBox implements IteratorAggregate, Countable
      */
     public function isEnabled($name)
     {
-        return !empty($this->features[$name])
-            ? $this->features[$name]->isEnabled()
-            : $this->defaultState;
+        $feature = !empty($this->features[$name]) ? $this->features[$name] : null;
+        $isEnabled = null !== $feature ? $feature->isEnabled() : $this->defaultState;
+
+        $this->profile->hit($name, $isEnabled, $feature);
+
+        return $isEnabled;
     }
 
     public function count(): int
