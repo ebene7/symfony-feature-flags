@@ -15,6 +15,7 @@ class FeatureBoxBuilder
     /** @var ConditionFactory */
     private $conditionFactory;
 
+    /** @var ProfileInterface */
     private $profile;
 
     /**
@@ -23,7 +24,7 @@ class FeatureBoxBuilder
      * @param ConditionFactory $factory
      * @param ProfileInterface $profile
      */
-    public function __construct(ConditionFactory $factory, ProfileInterface $profile)
+    public function __construct(ConditionFactory $factory, ProfileInterface $profile = null)
     {
         $this->conditionFactory = $factory;
         $this->profile = $profile;
@@ -89,8 +90,6 @@ class FeatureBoxBuilder
         return $box;
     }
 
-
-
     /**
      * @param array $config
      * @return array
@@ -123,8 +122,6 @@ class FeatureBoxBuilder
                 $args = [];
                 foreach ($reflection->getMethod('__construct')->getParameters() as $parameter) {
                     $pn = strtolower($parameter->getName());
-//                    echo $pn;
-//                    print_r($conditionConfig);
                     if (!empty($conditionConfig[$pn])) {
                         $args[$pn] = $conditionConfig[$pn];
                     }
@@ -137,9 +134,6 @@ class FeatureBoxBuilder
             $condition->setName($name);
             $conditions[$name] = $condition;
         }
-        
-        
-        
         
         return $conditions;
     }
@@ -154,8 +148,6 @@ class FeatureBoxBuilder
             
             if (preg_match($pattern, $name, $match) 
                 && strtolower($type) == strtolower($match['type'])) {
-                
-//            echo 'HIER '.sprintf("%s\\Conditions\\%sCondition", __NAMESPACE__, $match['type']);
                 return sprintf("%s\\Conditions\\%sCondition", __NAMESPACE__, $match['type']);
             }
         }

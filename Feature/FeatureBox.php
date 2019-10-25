@@ -105,7 +105,10 @@ class FeatureBox implements IteratorAggregate, Countable
     public function isEnabled($name)
     {
         $feature = !empty($this->features[$name]) ? $this->features[$name] : null;
-        $isEnabled = null !== $feature ? $feature->isEnabled() : $this->defaultState;
+
+        $isEnabled = null !== $feature
+            ? $feature->isEnabled($this->context)
+            : $this->defaultState;
 
         $this->profile->hit($name, $isEnabled, $feature);
 

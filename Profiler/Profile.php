@@ -30,12 +30,13 @@ class Profile implements ProfileInterface
         FeatureInterface $feature = null
     ): ProfileInterface {
         $data = &$this->data;
-        echo '##';
+
         if (empty($data[$name])) {
             $data[$name] = [
                 'name' => $name,
                 'exists' => null !== $feature,
-                'parent' => null !== $feature ? $feature->getParent()->getName() : '',
+                'parent' => null !== $feature && null !== $feature->getParent()
+                    ? $feature->getParent()->getName() : '',
                 'is_enabled' => $isEnabled,
                 'count' => 0,
             ];

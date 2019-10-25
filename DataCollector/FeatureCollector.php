@@ -25,6 +25,14 @@ class FeatureCollector extends DataCollector
     /**
      * @inheritDoc
      */
+    public function getName(): string
+    {
+        return 'e7.feature_flags_bundle.collector';
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function collect(
         Request $request,
         Response $response,
@@ -51,12 +59,9 @@ class FeatureCollector extends DataCollector
         $this->data = $data;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
+    public function reset()
     {
-        return 'e7.feature_flags_bundle.collector';
+        $this->data = [];
     }
 
     /**
@@ -64,7 +69,8 @@ class FeatureCollector extends DataCollector
      */
     public function getFeatureCount()
     {
-        return $this->data['feature_count'];
+        return !empty($this->data['feature_count'])
+            ? (int) $this->data['feature_count'] : 0;
     }
 
     /**
@@ -72,7 +78,7 @@ class FeatureCollector extends DataCollector
      */
     public function getHits()
     {
-        return $this->data['hits'];
+        return !empty($this->data['hits']) ? $this->data['hits'] : [];
     }
 
     /**
@@ -80,6 +86,6 @@ class FeatureCollector extends DataCollector
      */
     public function getFeatures()
     {
-        return $this->data['features'];
+        return !empty($this->data['features']) ? $this->data['features'] : [];
     }
 }
