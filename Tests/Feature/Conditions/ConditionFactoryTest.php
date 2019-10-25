@@ -57,7 +57,11 @@ class ConditionFactoryTest extends TestCase
         }
 
         $factory = new ConditionFactory();
-        $condition = $factory->create2($input['type'], $input['config']);
+
+        $args = $input['args'];
+        array_unshift($args, $input['type']);
+
+        $condition = call_user_func_array([$factory, 'create'], $args);
 
         $this->assertInstanceOf($expected['type'], $condition);
         $this->assertEquals($expected['vote_result'], $condition->vote($input['context']));
@@ -67,6 +71,97 @@ class ConditionFactoryTest extends TestCase
      * @return array
      */
     public function providerCreate()
+    {
+        return [
+            'create-bool-from-type-true' => [
+                [
+                    'type' => 'bool',
+                    'args' => [ true ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => true,
+                ]
+            ],
+            'create-bool-from-type-false' => [
+                [
+                    'type' => 'bool',
+                    'args' => [ false ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => false,
+                ]
+            ],
+            'create-bool-from-class-true' => [
+                [
+                    'type' => BoolCondition::class,
+                    'args' => [ true ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => true,
+                ]
+            ],
+            'create-bool-from-class-false' => [
+                [
+                    'type' => BoolCondition::class,
+                    'args' => [ false ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => false,
+                ]
+            ],
+            'unknown-type' => [
+                [
+                    'type' => 'unknown-condition-type',
+                    'args' => [],
+                ],
+                [
+                    'exception' => \Exception::class
+                ]
+            ],
+            'too-many-parameters' => [
+                [
+                    'type' => 'bool',
+                    'args' => [true, true, true],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => true,
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider providerCreateFromConfig
+     * @param array $input
+     * @param array $expected
+     */
+    public function testCreateFromConfig(array $input, array $expected)
+    {
+        if (!empty($expected['exception'])) {
+            $this->expectException($expected['exception']);
+        }
+
+        $factory = new ConditionFactory();
+        $condition = $factory->createFromConfig($input['type'], $input['config']);
+
+        $this->assertInstanceOf($expected['type'], $condition);
+        $this->assertEquals($expected['vote_result'], $condition->vote($input['context']));
+    }
+
+    /**
+     * @return array
+     */
+    public function providerCreateFromConfig()
     {
         return [
             'create-bool-from-type-true' => [
@@ -121,7 +216,39 @@ class ConditionFactoryTest extends TestCase
                 [
                     'exception' => \Exception::class
                 ]
-            ]
+            ],
+            'too-many-parameters' => [
+                [
+                    'type' => BoolCondition::class,
+                    'config' => [ 'flag' => true, 'foo' => 'bar', 'bazz' => 'bamm' ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => true,
+                ]
+            ],
+            'too-many-parameters-wrong-order' => [
+                [
+                    'type' => BoolCondition::class,
+                    'config' => [ 'foo' => 'bar', 'flag' => true, 'bazz' => 'bamm' ],
+                    'context' => new Context(),
+                ],
+                [
+                    'type' => BoolCondition::class,
+                    'vote_result' => true,
+                ]
+            ],
+            'missing-parameters' => [
+                [
+                    'type' => BoolCondition::class,
+                    'config' => [ 'foo' => 'bar', 'bazz' => 'bamm' ],
+                    'context' => new Context(),
+                ],
+                [
+                    'exception' => \Exception::class
+                ]
+            ],
         ];
     }
 }

@@ -8,7 +8,13 @@ namespace E7\FeatureFlagsBundle\Feature\Conditions;
  */
 class ConditionFactory
 {
-    public function __call($method, array $args)
+    /**
+     * @param string $method
+     * @param array $args
+     * @return ConditionInterface|null
+     * @throws \Exception
+     */
+    public function __call(string $method, array $args)
     {
         $pattern = '/^create(?P<type>.*)$/';
 
@@ -47,29 +53,27 @@ class ConditionFactory
      * @return \E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface
      * @throws \Exception
      */
-    public function create2($type, array $config = [])
+    public function createFromConfig($type, array $config = [])
     {
-//        print_r(func_get_args());
-
         $class = $this->guessClassName($type);
-        $condition = null;
-        
+
         if (!class_exists($class)) {
-            throw new \Exception('Condition does not exist or does not implement ConditionInterface (' . $class . ')');
+            throw new \Exception('Condition does not exist or does not implement ConditionInterface');
         }
-        
+
         $reflection = new \ReflectionClass($class);
-            
+
         if ($reflection->hasMethod('__construct')) {
             $args = [];
+
             /** @var $parameter ReflectionParameter */
             foreach ($reflection->getMethod('__construct')->getParameters() as $parameter) {
                 $parameterName = strtolower($parameter->getName());
-               
+
                 if (!isset($config[$parameterName]) && !$parameter->isOptional()) {
                     throw new \Exception('Missing mandatory parameter ' . $parameterName);
                 }
-                
+
                 $args[$parameterName] = $config[$parameterName];
             }
             $condition = $reflection->newInstanceArgs($args);
@@ -79,7 +83,7 @@ class ConditionFactory
 
         return $condition;
     }
-    
+
     /**
      * @param string $type
      * @return string|null
@@ -89,7 +93,7 @@ class ConditionFactory
         if (false !== strstr($type, '\\')) {
             return $type;
         }
-        
+
         foreach (new \DirectoryIterator(__DIR__) as $name) {
             $pattern = '/(?P<type>[^Abstract].+)Condition\.(.+)/';
             
@@ -98,7 +102,7 @@ class ConditionFactory
                 return sprintf("%s\\%sCondition", __NAMESPACE__, $match['type']);
             }
         }
-        
+
         return $type;
     }
 }
