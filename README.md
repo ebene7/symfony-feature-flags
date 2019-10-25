@@ -1,5 +1,13 @@
 # E7 Symfony Feature Flags Bundle
 
+The Bundle provides Feature Flags/Toggles for your Application. You can easily
+configure in yaml-File, use services or just PHP.
+
+It also offers you...
+* Twig Extension
+* Debug Webtoolbar Panel
+* Debug CLI Commands
+
 ## Documentation
 
 ## Installation/Setup
