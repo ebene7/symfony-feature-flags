@@ -5,7 +5,9 @@ namespace E7\FeatureFlagsBundle\Feature;
 use E7\FeatureFlagsBundle\Context\ContextInterface;
 use E7\FeatureFlagsBundle\Feature\Conditions\ChainCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface;
+use E7\FeatureFlagsBundle\Feature\FeatureInterface;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Class Feature
@@ -83,6 +85,22 @@ class Feature implements FeatureInterface
     public function hasConditions()
     {
         return 0 < count($this->conditions);
+    }
+
+    /**
+     * @param FeatureInterface $parent
+     * @return Feature
+     * @throws RuntimeException
+     */
+    public function setParent(FeatureInterface $parent = null)
+    {
+        if ($parent === $this) {
+            throw new RuntimeException('Feature cannot be own parent');
+        }
+
+        $this->parent = $parent;
+
+        return $this;
     }
 
     /**

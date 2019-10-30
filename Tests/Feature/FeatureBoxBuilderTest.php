@@ -7,6 +7,7 @@ use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
 use E7\FeatureFlagsBundle\Feature\Conditions\TypeResolver;
 use E7\FeatureFlagsBundle\Feature\FeatureBox;
 use E7\FeatureFlagsBundle\Feature\FeatureBoxBuilder;
+use E7\FeatureFlagsBundle\Feature\FeatureInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,6 +37,12 @@ class FeatureBoxBuilderTest extends TestCase
             $this->assertEquals($fe['name'], $feature->getName());
             $this->assertEquals($fe['is_enabled'], $feature->isEnabled($input['context']));
             $this->assertCount(count($fe['conditions']), $feature->getConditions());
+
+            if (!empty($fe['parent'])) {
+                $parent = $feature->getParent();
+                $this->assertInstanceOf(FeatureInterface::class, $parent);
+                $this->assertEquals($fe['parent'], $parent->getName());
+            }
 
             $cindex = 0;
             foreach ($feature->getConditions() as $condition) {
@@ -161,7 +168,40 @@ class FeatureBoxBuilderTest extends TestCase
                         ]
                     ]
                 ]
-            ],            
+            ],
+            'feature-with-parent' => [
+                [
+                    'config' => [
+                        'features' => [
+                            'awesome-feature5' => true,
+                            'awesome-feature6' => [
+                                'parent' => 'awesome-feature5',
+                                'enabled' => false
+                            ]
+                        ],
+                    ],
+                    'context' => new Context(),
+                ],
+                [
+                    'features' => [
+                        [
+                            'name' => 'awesome-feature5',
+                            'is_enabled' => true,
+                            'conditions' => [
+                                [ 'type' => 'bool', 'name' => '' ],
+                            ]
+                        ],
+                        [
+                            'name' => 'awesome-feature6',
+                            'parent' => 'awesome-feature5',
+                            'is_enabled' => false,
+                            'conditions' => [
+                                [ 'type' => 'bool', 'name' => '' ],
+                            ]
+                        ],
+                    ]
+                ]
+            ]
         ];
     }
 }

@@ -64,6 +64,15 @@ class FeatureBox implements IteratorAggregate, Countable
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name): bool
+    {
+        return !empty($this->features[$name]);
+    }
+
+    /**
      * @return boolean
      */
     public function isEmpty()

@@ -124,7 +124,7 @@ class FeatureBoxTest extends TestCase
         $this->assertEquals($expected['is_enabled'], $isEnabled);
         $this->assertEquals($expected['data'], $profile->getData());
     }
-
+    
     /**
      * @return array
      */
@@ -168,6 +168,17 @@ class FeatureBoxTest extends TestCase
                 ]
             ],
         ];
+    }
+
+    public function testHas()
+    {
+        $name = 'awesome-feature-' . rand(0, 9999);
+
+        $featureBox = $this->createFeatureBox();
+        $this->assertFalse($featureBox->has($name));
+
+        $featureBox->addFeature(new Feature($name));
+        $this->assertTrue($featureBox->has($name));
     }
 
     /**

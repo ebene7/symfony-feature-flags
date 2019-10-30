@@ -4,6 +4,7 @@ namespace E7\FeatureFlagsBundle\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
+use E7\FeatureFlagsBundle\Feature\FeatureBox;
 use E7\FeatureFlagsBundle\Profiler\ProfileInterface;
 
 /**
@@ -87,6 +88,8 @@ class FeatureBoxBuilder
             }
         }
 
+        $this->setParentRelation($box, $config['features']);
+
         return $box;
     }
 
@@ -163,5 +166,19 @@ class FeatureBoxBuilder
         $box->addFeature($feature);
         
         return $this;
+    }
+
+    /**
+     * @param FeatureBox $box
+     * @param array $config
+     */
+    protected function setParentRelation(FeatureBox $box, array $config)
+    {
+        foreach ($config as $name => $item) {
+            if (!empty($item['parent'])) {
+                $feature = $box->getFeature($name);
+                $feature->setParent($box->getFeature($item['parent']));
+            }
+        }
     }
 }
