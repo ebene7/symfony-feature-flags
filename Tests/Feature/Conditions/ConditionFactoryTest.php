@@ -5,6 +5,8 @@ namespace E7\FeatureFlagsBundle\Tests\Feature\Conditions;
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
+use E7\FeatureFlagsBundle\Feature\Conditions\ResolverInterface;
+use E7\FeatureFlagsBundle\Feature\Conditions\TypeResolver;
 use E7\PHPUnit\Traits\OopTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +25,7 @@ class ConditionFactoryTest extends TestCase
      */
     public function testMagicCall(array $input, array $expected)
     {
-        $factory = new ConditionFactory();
+        $factory = $this->createFactory();
         $method = 'create' . $input['type'];
 
         $this->assertObjectHasMethod('__call', $factory);
@@ -56,7 +58,7 @@ class ConditionFactoryTest extends TestCase
             $this->expectException($expected['exception']);
         }
 
-        $factory = new ConditionFactory();
+        $factory = $this->createFactory();
 
         $args = $input['args'];
         array_unshift($args, $input['type']);
@@ -151,7 +153,7 @@ class ConditionFactoryTest extends TestCase
             $this->expectException($expected['exception']);
         }
 
-        $factory = new ConditionFactory();
+        $factory = $this->createFactory();
         $condition = $factory->createFromConfig($input['type'], $input['config']);
 
         $this->assertInstanceOf($expected['type'], $condition);
@@ -250,5 +252,16 @@ class ConditionFactoryTest extends TestCase
                 ]
             ],
         ];
+    }
+
+    /**
+     * @param ResolverInterface $resolver
+     * @return ConditionFactory
+     */
+    protected function createFactory(ResolverInterface $resolver = null)
+    {
+        $resolver = $resolver ?: new TypeResolver();
+
+        return new ConditionFactory($resolver);
     }
 }

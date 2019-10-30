@@ -11,11 +11,10 @@ class TypeResolver implements ResolverInterface
     /**
      * @inheritDoc
      */
-    public function resolve(string $type): string
+    public function resolve(string $type): ?string
     {
-        // TODO: Implement resolve() method.
-
-        if (false !== strstr($type, '\\')) {
+        if (false !== strstr($type, '\\')
+            && class_exists($type)) {
             return $type;
         }
 

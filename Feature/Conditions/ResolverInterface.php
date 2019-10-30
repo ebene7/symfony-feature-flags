@@ -12,5 +12,5 @@ interface ResolverInterface
      * @param string $type
      * @return string|null
      */
-    public function resolve(string $type): string;
+    public function resolve(string $type): ?string;
 }

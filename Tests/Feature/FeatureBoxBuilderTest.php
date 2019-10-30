@@ -4,6 +4,7 @@ namespace E7\FeatureFlagsBundle\Tests\Feature;
 
 use E7\FeatureFlagsBundle\Context\Context;
 use E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory;
+use E7\FeatureFlagsBundle\Feature\Conditions\TypeResolver;
 use E7\FeatureFlagsBundle\Feature\FeatureBox;
 use E7\FeatureFlagsBundle\Feature\FeatureBoxBuilder;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +22,8 @@ class FeatureBoxBuilderTest extends TestCase
      */
     public function testBuildFromConfig(array $input, array $expected)
     {
-        $builder = new FeatureBoxBuilder(new ConditionFactory());
+        $factory = new ConditionFactory(new TypeResolver());
+        $builder = new FeatureBoxBuilder($factory);
         $box = $builder->buildFromConfig($input['config']);
 
         $this->assertInstanceOf(FeatureBox::class, $box);

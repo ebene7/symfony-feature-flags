@@ -2,39 +2,63 @@
 
 namespace E7\FeatureFlagsBundle\Feature\Conditions;
 
+use E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface;
+use E7\FeatureFlagsBundle\Feature\Conditions\ResolverInterface;
+use Exception;
+use ReflectionClass;
+
 /**
  * Description of ConditionFactory
  * @package E7\FeatureFlagsBundle\Feature\Conditions
  */
 class ConditionFactory
 {
+    /** @var ResolverInterface */
+    private $typeResolver;
+
+    /**
+     * Constructor
+     *
+     * @param ResolverInterface $typeResolver
+     */
+    public function __construct(ResolverInterface $typeResolver)
+    {
+        $this->typeResolver = $typeResolver;
+    }
+
     /**
      * @param string $method
      * @param array $args
      * @return ConditionInterface|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function __call(string $method, array $args)
     {
         $pattern = '/^create(?P<type>.*)$/';
 
         if (!preg_match($pattern, $method, $match)) {
-            throw new \Exception('Method does not exist');
+            throw new Exception('Method does not exist');
         }
 
         array_unshift($args, $match['type']);
         return call_user_func_array([$this, 'create'], $args);
     }
 
+    /**
+     * @param string $type
+     * @param mixed $config
+     * @return ConditionInterface
+     * @throws Exception
+     */
     public function create($type, ...$config)
     {
-        $class = $this->guessClassName($type);
+        $class = $this->typeResolver->resolve($type);
 
         if (!class_exists($class)) {
-            throw new \Exception('Condition does not exist or does not implement ConditionInterface');
+            throw new Exception('Condition does not exist or does not implement ConditionInterface');
         }
 
-        $reflection = new \ReflectionClass($class);
+        $reflection = new ReflectionClass($class);
 
         if (empty($config) || !$reflection->hasMethod('__construct')) {
             $condition = new $class();
@@ -50,18 +74,18 @@ class ConditionFactory
      * 
      * @param string $type
      * @param array $config
-     * @return \E7\FeatureFlagsBundle\Feature\Conditions\ConditionInterface
-     * @throws \Exception
+     * @return ConditionInterface
+     * @throws Exception
      */
     public function createFromConfig($type, array $config = [])
     {
-        $class = $this->guessClassName($type);
+        $class = $this->typeResolver->resolve($type);
 
         if (!class_exists($class)) {
-            throw new \Exception('Condition does not exist or does not implement ConditionInterface');
+            throw new Exception('Condition does not exist or does not implement ConditionInterface');
         }
 
-        $reflection = new \ReflectionClass($class);
+        $reflection = new ReflectionClass($class);
 
         if ($reflection->hasMethod('__construct')) {
             $args = [];
@@ -71,7 +95,7 @@ class ConditionFactory
                 $parameterName = strtolower($parameter->getName());
 
                 if (!isset($config[$parameterName]) && !$parameter->isOptional()) {
-                    throw new \Exception('Missing mandatory parameter ' . $parameterName);
+                    throw new Exception('Missing mandatory parameter ' . $parameterName);
                 }
 
                 $args[$parameterName] = $config[$parameterName];
@@ -82,27 +106,5 @@ class ConditionFactory
         }
 
         return $condition;
-    }
-
-    /**
-     * @param string $type
-     * @return string|null
-     */
-    protected function guessClassName(string $type): string
-    {
-        if (false !== strstr($type, '\\')) {
-            return $type;
-        }
-
-        foreach (new \DirectoryIterator(__DIR__) as $name) {
-            $pattern = '/(?P<type>[^Abstract].+)Condition\.(.+)/';
-            
-            if (preg_match($pattern, $name, $match) 
-                && strtolower($type) == strtolower($match['type'])) {
-                return sprintf("%s\\%sCondition", __NAMESPACE__, $match['type']);
-            }
-        }
-
-        return $type;
     }
 }
