@@ -108,4 +108,23 @@ class ProfileTest extends ProfileTestCase
         $this->assertObjectHasMethod('getData', $profile);
         $this->assertInternalType('array', $profile->getData());
     }
+
+    public function testCountMissingFeatures()
+    {
+        $profile = new Profile();
+
+        $this->assertObjectHasMethod('countMissingFeatures', $profile);
+
+        $countBefore = $profile->countMissingFeatures();
+
+        $this->assertInternalType('integer', $countBefore);
+        $this->assertEquals(0, $countBefore);
+
+        $profile->hit('not-configured-feature', false);
+
+        $countAfter = $profile->countMissingFeatures();
+
+        $this->assertInternalType('integer', $countAfter);
+        $this->assertEquals(1, $countAfter);
+    }
 }

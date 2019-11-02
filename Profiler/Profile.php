@@ -36,7 +36,7 @@ class Profile implements ProfileInterface
                 'name' => $name,
                 'exists' => null !== $feature,
                 'parent' => null !== $feature && null !== $feature->getParent()
-                    ? $feature->getParent()->getName() : '',
+                    ? $feature->getParent()->getName() : null,
                 'is_enabled' => $isEnabled,
                 'count' => 0,
             ];
@@ -45,5 +45,21 @@ class Profile implements ProfileInterface
         $data[$name]['count']++;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function countMissingFeatures()
+    {
+        $missing = 0;
+
+        foreach($this->getData() as $item) {
+            if (true !== $item['exists']) {
+                $missing++;
+            }
+        }
+
+        return $missing;
     }
 }

@@ -19,7 +19,11 @@ services:
         arguments:
             $config: '%e7_feature_flags%'
 
+    E7\FeatureFlagsBundle\Feature\Conditions\TypeResolver:
+        public: true
+
     E7\FeatureFlagsBundle\Feature\Conditions\ConditionFactory:
+        $typeResolver: '@E7\FeatureFlagsBundle\Feature\Conditions\TypeResolver'
 
     # commands
     E7\FeatureFlagsBundle\Command\DebugFeatureCommand:
@@ -27,7 +31,8 @@ services:
         arguments:
             - '@E7\FeatureFlagsBundle\Feature\FeatureBox'
         tags:
-            - { name: 'console.command', command: 'ebene7:feature_flags:debug' } 
+            - { name: 'console.command', command: 'debug:feature-flags' }
+            - { name: 'console.command', command: 'ebene7:feature_flags:debug' }
 
     E7\FeatureFlagsBundle\Command\ListFeaturesCommand:
         public: true

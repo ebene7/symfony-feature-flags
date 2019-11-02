@@ -59,7 +59,10 @@ class Configuration implements ConfigurationInterface
                         ->canBeEnabled()
                         ->beforeNormalization()
                             ->ifArray()
-                            ->then(function($v) { return ['conditions' => $v]; })
+                            ->then(function($v) {
+                                return (empty($v['type']) && empty($v['parent']) && empty($v['conditions']))
+                                    ? ['conditions' => $v] : $v;
+                            })
                         ->end() // end: beforeNormalization
                         ->beforeNormalization()
                             ->ifString()
@@ -69,10 +72,10 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('enable')->end()
                             ->scalarNode('parent')->defaultValue(null)->end()
                             ->arrayNode('conditions')
-                                ->beforeNormalization()
-                                    ->ifString()
-                                    ->then(function($v) { return [$v]; })
-                                ->end() // end: beforeNormalization
+//                                ->beforeNormalization()
+//                                    ->ifString()
+//                                    ->then(function($v) { return [$v]; })
+//                                ->end() // end: beforeNormalization
                                 ->scalarPrototype()->end()
                             ->end()
                         ->end()

@@ -27,30 +27,47 @@
 {% block menu %}
     <span class="label">
         <span class="icon">{% include('@E7FeatureFlags/data_collector/switch-on.svg') %}</span>
-        <strong>Feature Flags</strong>
+        <strong>
+            Feature Flags <span class="count">{{ collector.featurecount }}</span>
+        </strong>
     </span>
 {% endblock %}
 
 {% block panel %}
     <h2>Feature Flags</h2>
 
-    <h3>Hits</h3>
+    <div class="metrics">
+        <div class="metric">
+            <span class="value">{{ collector.featurecount }}</span>
+            <span class="label">Configured</span>
+        </div>
+        <div class="metric">
+            <span class="value">{{ collector.hitcount }}</span>
+            <span class="label">Requested</span>
+        </div>
+        <div class="metric">
+            <span class="value">{{ collector.missingcount }}</span>
+            <span class="label">Not Configured</span>
+        </div>
+    </div>
+
+    <h3>Requested Feature Flags</h3>
     <table>
         <tr>
             <th>Feature</th>
-            <th>Configured</th>
             <th>Parent</th>
-            <th>isEnabled</th>
-            <th>Hits</th>
+            <th class="text-center">Configured</th>
+            <th class="text-center">isEnabled</th>
+            <th class="text-center">Hits</th>
         </tr>
 
         {% for hit in collector.hits %}
             <tr>
                 <td>{{ hit.name }}</td>
-                <td>{{ hit.exists }}</td>
-                <td>{{ hit.parent }}</td>
-                <td>{{ hit.is_enabled }}</td>
-                <td>{{ hit.count }}</td>
+                <td>{{ hit.parent | default('[no parent]') }}</td>
+                <td class="text-center">{{ hit.exists ? 'yes' : 'no' }}</td>
+                <td class="text-center">{{ hit.is_enabled ? 'yes' : 'no' }}</td>
+                <td class="text-center">{{ hit.count }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -66,7 +83,7 @@
         {% for feature in collector.features %}
             <tr>
                 <td>{{ feature.name }}</td>
-                <td>{{ feature.parent }}</td>
+                <td>{{ feature.parent | default('[no parent]') }}</td>
                 <td>{{ feature.conditions }}</td>
             </tr>
         {% endfor %}

@@ -40,11 +40,12 @@ class FeatureCollector extends DataCollector
     ) {
         $profile = $this->box->getProfile();
         $features = [];
-
+        $numMissing = 0;
+//        print_r($this->box);
         foreach ($this->box as $name => $feature) {
             $features[$name] = [
                 'name' => $name,
-                'parent' => null !== $feature->getParent() ? $feature->getParent()->getName() : '',
+                'parent' => null !== $feature->getParent() ? $feature->getParent()->getName() : null,
                 'conditions' => implode(', ', iterator_to_array($feature->getConditions())),
             ];
         }
@@ -52,6 +53,7 @@ class FeatureCollector extends DataCollector
         $data = [
             'feature_count' => count($this->box),
             'hits_count' => count($profile->getData()),
+            'missing_count' => $profile->countMissingFeatures(),
             'features' => $features,
             'hits' => $profile->getData(),
         ];
@@ -71,6 +73,24 @@ class FeatureCollector extends DataCollector
     {
         return !empty($this->data['feature_count'])
             ? (int) $this->data['feature_count'] : 0;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getHitCount()
+    {
+        return !empty($this->data['hits_count'])
+            ? (int) $this->data['hits_count'] : 0;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getMissingCount()
+    {
+        return !empty($this->data['missing_count'])
+            ? (int) $this->data['missing_count'] : 0;
     }
 
     /**

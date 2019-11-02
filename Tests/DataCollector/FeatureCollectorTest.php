@@ -40,6 +40,22 @@ class FeatureCollectorTest extends TestCase
         $this->doTestGetter($collector, 'FeatureCount', 0);
     }
 
+    public function testGetHitCount()
+    {
+        $reflection = new ReflectionClass(FeatureCollector::class);
+        $collector = $reflection->newInstanceWithoutConstructor();
+
+        $this->doTestGetter($collector, 'HitCount', 0);
+    }
+
+    public function testGetMissingCount()
+    {
+        $reflection = new ReflectionClass(FeatureCollector::class);
+        $collector = $reflection->newInstanceWithoutConstructor();
+
+        $this->doTestGetter($collector, 'MissingCount', 0);
+    }
+
     public function testGetHits()
     {
         $reflection = new ReflectionClass(FeatureCollector::class);
