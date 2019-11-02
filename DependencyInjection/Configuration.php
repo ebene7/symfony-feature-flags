@@ -56,20 +56,43 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('features')
                     ->arrayPrototype()
-                        ->canBeEnabled()
-                        ->beforeNormalization()
+                        ->beforeNormalization()  // name
                             ->ifArray()
-                            ->then(function($v) {
-                                return (empty($v['type']) && empty($v['parent']) && empty($v['conditions']))
-                                    ? ['conditions' => $v] : $v;
+                            ->then(function(&$v) {
+                                if (!isset($v['enabled']) && !isset($v['parent']) && !isset($v['conditions'])) {
+                                    $v = ['conditions' => $v ];
+                                    return $v;
+                                }
+
+                                if (isset($v['enabled'])) {
+                                    if (true === $v['enabled']) {
+                                        $condition = [ 'enabled' ];
+                                    } else if (!empty($v['enabled'])) {
+//                                    print_r($v['enabled']);
+                                        $condition = [$v['enabled']];
+                                    } else {
+                                        $condition = [ 'default' ];
+                                    }
+                                    $v['conditions'] = $condition;
+                                    unset($v['enabled']);
+                                    return $v;
+                                } else {
+                                    $v = ['conditions' => $v ];
+                                    return $v;
+                                }
                             })
                         ->end() // end: beforeNormalization
+                        ->beforeNormalization()  // name: true
+                            ->ifTrue()->then(function($v) { return ['conditions' => [ 'enabled' ]]; })
+                        ->end() // end: beforeNormalization
+                        ->beforeNormalization()  // name:
+                            ->ifEmpty()->then(function($v) { return 'default'; })
+                        ->end()
                         ->beforeNormalization()
-                            ->ifString()
-                            ->then(function($v) { return ['conditions' => [$v]]; })
+                            ->ifString()->then(function($v) { return ['conditions' => [$v]]; })
                         ->end() // end: beforeNormalization
                         ->children()
-                            ->scalarNode('enable')->end()
+                            ->scalarNode('enabled')->end()
                             ->scalarNode('parent')->defaultValue(null)->end()
                             ->arrayNode('conditions')
 //                                ->beforeNormalization()
@@ -100,6 +123,9 @@ class Configuration implements ConfigurationInterface
                                 ->end() // end: beforeNormalization
                                 ->scalarPrototype()->end()
                             ->end() // type: ipadress
+                            ->arrayNode('members')
+                                ->scalarPrototype()->end()
+                            ->end()  // end: members
                             ->integerNode('percentage')->end() // type: percent
                         ->end()
                     ->end() // end: arrayPrototype

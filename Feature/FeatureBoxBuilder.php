@@ -38,26 +38,36 @@ class FeatureBoxBuilder
      */
     public function buildFromConfig(array $config)
     {
+
         $box = new FeatureBox([], new Context(), $this->profile);
         $box->setDefaultState(empty($config['default']) ? true : (bool) $config['default']);
         $factory = $this->conditionFactory;
 
         $features = [];
+//print_r($config);
 
         $conditions = !empty($config['conditions']) 
             ? $this->prepareConditions($config['conditions']) 
             : [];
-
+//print_r($conditions);
         foreach ($config['features'] as $key => $featureConfig) {
 
             if (is_string($key) && is_bool($featureConfig)) {
+//    echo "1. name=$key<br>";
                 $this->addFeatureWithFlag($box, $key, $featureConfig);
                 continue;
             }
 
             if (is_string($key) && is_array($featureConfig)) {
-                if (isset($featureConfig['enabled'])) {
-                    $this->addFeatureWithFlag($box, $key, $featureConfig['enabled']);
+                if (!empty($featureConfig['conditions'])) {
+//    echo "2. name=$key<br>";
+                    $feature = new Feature($key);
+                    foreach($featureConfig['conditions'] as $conditionName) {
+                        if (!empty($conditions[$conditionName])) {
+                            $feature->addCondition($conditions[$conditionName]);
+                        }
+                    }
+                    $box->addFeature($feature);
                     continue;
                 }
 
@@ -67,12 +77,19 @@ class FeatureBoxBuilder
                     $feature = new Feature($key);
                     
                     foreach ($featureConfig as $conditionRelation) {
-                        if (empty($conditions[$conditionRelation])) {
-                            throw new \Exception('Condition ' . $conditionRelation . ' not found');
+//    echo "3. name=$key rel=<br>##" . print_r($conditionRelation, true) .'##';
+                        if (!empty($conditionRelation) && !empty($conditions[$conditionRelation])) {
+                            $feature->addCondition($conditions[$conditionRelation]);
+                            //throw new \Exception('Condition ' . $conditionRelation . ' not found');
                         }
-                        $feature->addCondition($conditions[$conditionRelation]);
                     }
                     $box->addFeature($feature);
+                    continue;
+                }
+
+                if (isset($featureConfig['enabled']) && is_bool($featureConfig['enabled'])) {
+//    echo "4. name=$key<br>";
+                    $this->addFeatureWithFlag($box, $key, $featureConfig['enabled']);
                     continue;
                 }
             }
@@ -82,6 +99,7 @@ class FeatureBoxBuilder
                 if (empty($conditions[$featureConfig])) {
                     throw new \Exception('Condition ' . $featureConfig . ' not found');
                 }
+//    echo "5. name=$key rel=$featureConfig<br>";
                 $feature->addCondition($conditions[$featureConfig]);
                 $box->addFeature($feature);
                 continue;
@@ -162,7 +180,9 @@ class FeatureBoxBuilder
         $factory = $this->conditionFactory;
         
         $feature = new Feature($name);
-        $feature->addCondition($factory->create('bool', $flag));
+        $c = $factory->create('bool', $flag);
+        $feature->addCondition($c);
+  echo "aFwF name=$name condType=" . get_class($c);
         $box->addFeature($feature);
         
         return $this;
