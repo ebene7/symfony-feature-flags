@@ -49,7 +49,7 @@ services:
             -
                 name:     data_collector
                 template: '@E7FeatureFlags/data_collector/feature.html.twig'
-                id:       'e7.feature_flags_bundle.collector'
+                id:       'feature-flags'
         public: false
 
     E7\FeatureFlagsBundle\Profiler\Profile:

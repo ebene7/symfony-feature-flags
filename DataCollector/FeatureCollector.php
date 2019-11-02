@@ -27,7 +27,7 @@ class FeatureCollector extends DataCollector
      */
     public function getName(): string
     {
-        return 'e7.feature_flags_bundle.collector';
+        return 'feature-flags';
     }
 
     /**
@@ -41,7 +41,7 @@ class FeatureCollector extends DataCollector
         $profile = $this->box->getProfile();
         $features = [];
         $numMissing = 0;
-//        print_r($this->box);
+
         foreach ($this->box as $name => $feature) {
             $features[$name] = [
                 'name' => $name,
