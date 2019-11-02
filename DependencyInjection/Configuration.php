@@ -2,6 +2,8 @@
 
 namespace E7\FeatureFlagsBundle\DependencyInjection;
 
+use Closure;
+use Symfony\Component\Config\Definition\Builder\NodeParentInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -54,84 +56,151 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('features')
-                    ->arrayPrototype()
-                        ->beforeNormalization()  // name
-                            ->ifArray()
-                            ->then(function(&$v) {
-                                if (!isset($v['enabled']) && !isset($v['parent']) && !isset($v['conditions'])) {
-                                    $v = ['conditions' => $v ];
-                                    return $v;
-                                }
-
-                                if (isset($v['enabled'])) {
-                                    if (true === $v['enabled']) {
-                                        $condition = [ 'enabled' ];
-                                    } else if (!empty($v['enabled'])) {
-//                                    print_r($v['enabled']);
-                                        $condition = [$v['enabled']];
-                                    } else {
-                                        $condition = [ 'default' ];
-                                    }
-                                    $v['conditions'] = $condition;
-                                    unset($v['enabled']);
-                                    return $v;
-                                } else {
-                                    $v = ['conditions' => $v ];
-                                    return $v;
-                                }
-                            })
-                        ->end() // end: beforeNormalization
-                        ->beforeNormalization()  // name: true
-                            ->ifTrue()->then(function($v) { return ['conditions' => [ 'enabled' ]]; })
-                        ->end() // end: beforeNormalization
-                        ->beforeNormalization()  // name:
-                            ->ifEmpty()->then(function($v) { return 'default'; })
-                        ->end()
-                        ->beforeNormalization()
-                            ->ifString()->then(function($v) { return ['conditions' => [$v]]; })
-                        ->end() // end: beforeNormalization
-                        ->children()
-                            ->scalarNode('enabled')->end()
-                            ->scalarNode('parent')->defaultValue(null)->end()
-                            ->arrayNode('conditions')
-//                                ->beforeNormalization()
-//                                    ->ifString()
-//                                    ->then(function($v) { return [$v]; })
-//                                ->end() // end: beforeNormalization
-                                ->scalarPrototype()->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end() // end: features
-                ->arrayNode('conditions')
-                    ->arrayPrototype()
-                        ->children()
-                            ->scalarNode('type')->defaultValue('bool')->end()
-                            ->booleanNode('flag')->end() // type: bool
-                            ->arrayNode('hosts')
-                                ->beforeNormalization()
-                                    ->ifString()
-                                    ->then(function($v) { return [$v]; })
-                                ->end() // end: beforeNormalization
-                                ->scalarPrototype()->end()
-                            ->end() // end: hosts
-                            ->arrayNode('ips')
-                                ->beforeNormalization()
-                                    ->ifString()
-                                    ->then(function($v) { return [$v]; })
-                                ->end() // end: beforeNormalization
-                                ->scalarPrototype()->end()
-                            ->end() // type: ipadress
-                            ->arrayNode('members')
-                                ->scalarPrototype()->end()
-                            ->end()  // end: members
-                            ->integerNode('percentage')->end() // type: percent
-                        ->end()
-                    ->end() // end: arrayPrototype
-                ->end() // end: conditions
+                ->append($this->buildDefaultSection())
+                ->append($this->buildFeaturesSection())
+                ->append($this->buildConditionsSection())
             ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * @return NodeParentInterface
+     */
+    protected function buildDefaultSection()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('_defaults');
+
+        $node
+            ->children()
+                ->booleanNode('state')->defaultTrue()->end()
+            ->end();
+
+        return $node;
+    }
+
+    /**
+     * Build the features config section
+     *
+     * @return NodeParentInterface
+     */
+    protected function buildFeaturesSection()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('features');
+
+        $node
+            ->arrayPrototype()
+                ->beforeNormalization()
+                    ->ifArray()->then($this->normalizeFeatureArrayCallback())
+                ->end() // end: beforeNormalization
+                ->beforeNormalization()
+                    ->ifTrue()->then(function($v) { return ['conditions' => [ 'enabled' ]]; })
+                ->end() // end: beforeNormalization
+                ->beforeNormalization()
+                    ->ifEmpty()->then(function($v) { return 'boolean' == gettype($v) ? 'disabled' : 'default'; })
+                ->end()
+                ->beforeNormalization()
+                    ->ifString()->then(function($v) { return ['conditions' => [$v]]; })
+                ->end() // end: beforeNormalization
+                ->children()
+                    ->scalarNode('enabled')->end()
+                    ->scalarNode('parent')->defaultValue(null)->end()
+                    ->arrayNode('conditions')
+                        ->scalarPrototype()->end()
+                    ->end()
+                ->end()
+            ->end();
+
+        return $node;
+    }
+
+    /**
+     * Build the conditions config section
+     *
+     * @return NodeParentInterface
+     */
+    protected function buildConditionsSection()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('conditions');
+        $node
+            ->arrayPrototype()
+                ->validate() // removes empty config arrays
+                    ->always($this->removeEmptyArraysCallback())
+                ->end() // end: validate
+                ->children()
+                    ->scalarNode('type')->defaultValue('bool')->end()
+                    ->booleanNode('flag')->end()
+                    ->append($this->buildStringToArrayNode('hosts'))
+                    ->append($this->buildStringToArrayNode('ips'))
+                    ->append($this->buildStringToArrayNode('members'))
+                    ->integerNode('percentage')->end() // type: percent
+                ->end()
+            ->end(); // end: arrayPrototype
+
+        return $node;
+    }
+
+    /**
+     * @return NodeParentInterface
+     */
+    protected function buildStringToArrayNode($name)
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root($name);
+
+        $node
+            ->beforeNormalization()
+                ->ifString()->then(function($v) { return [$v]; })
+            ->end() // end: beforeNormalization
+            ->scalarPrototype()->end();
+
+        return $node;
+    }
+
+    /**
+     * @return Closure
+     */
+    protected function normalizeFeatureArrayCallback()
+    {
+        return function(&$v) {
+            if (!isset($v['enabled']) && !isset($v['parent']) && !isset($v['conditions'])) {
+                $v = ['conditions' => $v ];
+                return $v;
+            }
+
+            if (isset($v['enabled'])) {
+                if (true === $v['enabled']) {
+                    $condition = [ 'enabled' ];
+                } else if (!empty($v['enabled'])) {
+                    $condition = [$v['enabled']];
+                } else {
+                    $condition = [ 'default' ];
+                }
+                $v['conditions'] = $condition;
+                unset($v['enabled']);
+                return $v;
+            } else {
+                $v = ['conditions' => $v ];
+                return $v;
+            }
+        };
+    }
+
+    /**
+     * @return Closure
+     */
+    protected function removeEmptyArraysCallback()
+    {
+        return function($v) {
+            foreach ($v as $key => $value) {
+                if(is_array($v[$key]) && empty($v[$key])) {
+                    unset($v[$key]);
+                }
+            }
+            return $v;
+        };
     }
 }

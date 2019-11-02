@@ -18,7 +18,7 @@ abstract class AbstractCondition implements ConditionInterface
      */
     public function __toString()
     {
-        return sprintf("%s: %s", $this->getType(), $this->getName());
+        return sprintf("%s: %s",$this->getName() , $this->getType());
     }
 
     /**

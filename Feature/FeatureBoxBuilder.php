@@ -44,7 +44,7 @@ class FeatureBoxBuilder
         $factory = $this->conditionFactory;
 
         $features = [];
-//print_r($config);
+//echo '<pre>' . print_r($config, true) . '</pre>';
 
         $conditions = !empty($config['conditions']) 
             ? $this->prepareConditions($config['conditions']) 
@@ -143,7 +143,8 @@ class FeatureBoxBuilder
                 $args = [];
                 foreach ($reflection->getMethod('__construct')->getParameters() as $parameter) {
                     $pn = strtolower($parameter->getName());
-                    if (!empty($conditionConfig[$pn])) {
+//           print_r(array_keys($conditionConfig));
+                    if (isset($conditionConfig[$pn])) {
                         $args[$pn] = $conditionConfig[$pn];
                     }
                 }
