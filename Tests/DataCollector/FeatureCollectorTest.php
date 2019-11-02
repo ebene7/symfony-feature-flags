@@ -29,7 +29,7 @@ class FeatureCollectorTest extends TestCase
         $reflection = new ReflectionClass(FeatureCollector::class);
         $collector = $reflection->newInstanceWithoutConstructor();
 
-        $this->doTestGetter($collector, 'name', 'e7.feature_flags_bundle.collector');
+        $this->doTestGetter($collector, 'name', 'feature-flags');
     }
 
     public function testGetFeatureCount()
