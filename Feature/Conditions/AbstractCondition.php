@@ -14,6 +14,18 @@ abstract class AbstractCondition implements ConditionInterface
     private $name;
 
     /**
+     * Constructor
+     *
+     * @param string $name
+     */
+    public function __construct(string $name = null)
+    {
+        if (!empty($name)) {
+            $this->setName($name);
+        }
+    }
+
+    /**
      * @inheritDoc
      */
     public function __toString()

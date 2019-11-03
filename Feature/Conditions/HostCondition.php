@@ -16,12 +16,15 @@ class HostCondition extends AbstractCondition
     
     /**
      * Constructor
-     * 
+     *
      * @param array|string $hosts
+     * @param string $name
      * @throws InvalidArgumentException
      */
-    public function __construct($hosts)
+    public function __construct($hosts, string $name = null)
     {
+        parent::__construct($name);
+
         $this->hosts = is_string($hosts) ? [$hosts] : $hosts;
 
         if (!is_array($this->hosts)) {

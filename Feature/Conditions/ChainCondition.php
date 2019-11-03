@@ -18,9 +18,12 @@ class ChainCondition extends AbstractCondition implements ChainConditionInterfac
     /**
      * ChainCondition constructor.
      * @param array $members
+     * @param string $name
      */
-    public function __construct(array $members = [])
+    public function __construct(array $members = [], string $name = null)
     {
+        parent::__construct($name);
+
         foreach ($members as $condition) {
             $this->addCondition($condition);
         }

@@ -46,9 +46,13 @@ class FeatureBoxBuilder
         $features = [];
 //echo '<pre>' . print_r($config, true) . '</pre>';
 
-        $conditions = !empty($config['conditions']) 
+        $defaultConditions = $this->prepareDefaultConditions($box);
+
+        $confConditions = !empty($config['conditions']) 
             ? $this->prepareConditions($config['conditions']) 
             : [];
+        
+        $conditions = array_merge($defaultConditions, $confConditions);
 //print_r($conditions);
         foreach ($config['features'] as $key => $featureConfig) {
 
@@ -156,6 +160,24 @@ class FeatureBoxBuilder
             $condition->setName($name);
             $conditions[$name] = $condition;
         }
+        
+        return $conditions;
+    }
+    
+    /**
+     * 
+     * @param FeatureBox $box
+     * @return array
+     */
+    protected function prepareDefaultConditions(FeatureBox $box)
+    {
+        /** @var ConditionFactory $factory */
+        $factory = $this->conditionFactory;
+        $conditions = [];
+        
+        $conditions['enabled'] = $factory->create('bool', true, 'enabled');
+        $conditions['disabled'] = $factory->create('bool', false, 'disabled');
+        $conditions['default'] = $factory->create('bool', $box->getDefaultState(), 'default');
         
         return $conditions;
     }

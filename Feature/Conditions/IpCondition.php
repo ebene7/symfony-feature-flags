@@ -20,16 +20,19 @@ class IpCondition extends AbstractCondition
     
     /**
      * Constructor
-     * 
+     *
      * @param array|string $ips
+     * @param string $name
      * @throws InvalidArgumentException
      */
-    public function __construct($ips)
+    public function __construct($ips, string $name = null)
     {
+        parent::__construct($name);
+
         if (!is_array($ips)) {
             $ips = [$ips];
         }
-        
+
         foreach ($ips as $ip) {
             $ip = $this->normalize($ip);
             

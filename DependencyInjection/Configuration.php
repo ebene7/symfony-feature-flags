@@ -166,24 +166,26 @@ class Configuration implements ConfigurationInterface
     protected function normalizeFeatureArrayCallback()
     {
         return function(&$v) {
-            if (!isset($v['enabled']) && !isset($v['parent']) && !isset($v['conditions'])) {
+            if (!array_key_exists('enabled', $v)
+                && !array_key_exists('parent', $v)
+                && !array_key_exists('conditions', $v)) {
                 $v = ['conditions' => $v ];
                 return $v;
             }
 
-            if (isset($v['enabled'])) {
+            if (array_key_exists('enabled', $v)) {
                 if (true === $v['enabled']) {
                     $condition = [ 'enabled' ];
                 } else if (!empty($v['enabled'])) {
                     $condition = [$v['enabled']];
                 } else {
-                    $condition = [ 'default' ];
+                    $condition = [ 'boolean' == gettype($v['enabled']) ? 'disabled' : 'default' ];
                 }
                 $v['conditions'] = $condition;
                 unset($v['enabled']);
                 return $v;
             } else {
-                $v = ['conditions' => $v ];
+//                $v = ['conditions' => $v ];
                 return $v;
             }
         };

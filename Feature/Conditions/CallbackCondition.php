@@ -13,21 +13,24 @@ class CallbackCondition extends AbstractCondition
 {
     /** @var callable */
     private $callback;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param callable $callback
+     * @param string $name
      */
-    public function __construct($callback)
+    public function __construct($callback, string $name = null)
     {
+        parent::__construct($name);
+
         if (!is_callable($callback)) {
             throw new InvalidArgumentException('First parameter must be callable.');
         }
-        
+
         $this->callback = $callback;
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -35,7 +38,7 @@ class CallbackCondition extends AbstractCondition
     {
         return 'callback';
     }
-    
+
     /**
      * @inheritDoc
      */

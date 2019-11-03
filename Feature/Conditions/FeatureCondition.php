@@ -16,9 +16,12 @@ class FeatureCondition extends AbstractCondition
     /**
      * FeatureCondition constructor.
      * @param string $featureName
+     * @parame string $name
      */
-    public function __construct(string $featureName)
+    public function __construct(string $featureName, string $name = null)
     {
+        parent::__construct($name);
+
         $this->featureName = $featureName;
     }
 

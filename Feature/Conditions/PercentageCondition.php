@@ -16,8 +16,10 @@ class PercentageCondition extends AbstractCondition
      * PercentageCondition constructor.
      * @param int $percentage
      */
-    public function __construct(int $percentage)
+    public function __construct(int $percentage, string $name = null)
     {
+        parent::__construct($name);
+
         $this->percentage = $percentage;
     }
 

@@ -17,9 +17,12 @@ class BoolCondition extends AbstractCondition
      * Construct
      *
      * @param boolean $flag
+     * @param string $name
      */
-    public function __construct($flag)
+    public function __construct($flag, string $name = null)
     {
+        parent::__construct($name);
+
         $this->flag = (bool) $flag;
     }
 
