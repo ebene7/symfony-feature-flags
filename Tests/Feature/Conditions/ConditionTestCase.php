@@ -21,7 +21,7 @@ class ConditionTestCase extends TestCase
      */
     protected function doTestToStringConversion(ConditionInterface $condition)
     {
-        $expected = sprintf("%s: %s", $condition->getType(), $condition->getName());
+        $expected = sprintf("%s: %s", $condition->getName(), $condition->getType());
         $this->assertEquals($expected, (string) $condition);
     }
 }
