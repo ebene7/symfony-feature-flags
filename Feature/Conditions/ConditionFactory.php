@@ -98,7 +98,9 @@ class ConditionFactory
                     throw new Exception('Missing mandatory parameter ' . $parameterName);
                 }
 
-                $args[$parameterName] = $config[$parameterName];
+                if (isset($config[$parameterName])) {
+                    $args[$parameterName] = $config[$parameterName];
+                }
             }
             $condition = $reflection->newInstanceArgs($args);
         } else {
