@@ -183,7 +183,7 @@ class FeatureBoxBuilder
         $feature = new Feature($name);
         $c = $factory->create('bool', $flag);
         $feature->addCondition($c);
-  echo "aFwF name=$name condType=" . get_class($c);
+//  echo "aFwF name=$name condType=" . get_class($c);
         $box->addFeature($feature);
         
         return $this;
