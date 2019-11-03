@@ -14,9 +14,17 @@ use IteratorAggregate;
  */
 class ChainConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new ChainCondition([], $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
-        $condition = new BoolCondition(true);
+        $condition = new ChainCondition();
         $this->doTestMagicMethodToString($condition);
         $this->doTestToStringConversion($condition);
     }

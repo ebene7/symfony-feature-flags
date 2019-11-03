@@ -11,6 +11,14 @@ use E7\FeatureFlagsBundle\Feature\Conditions\PercentageCondition;
  */
 class PercentageConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new PercentageCondition(50, $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new PercentageCondition(50);

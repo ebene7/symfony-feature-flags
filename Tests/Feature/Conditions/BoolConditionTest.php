@@ -11,6 +11,14 @@ use E7\FeatureFlagsBundle\Feature\Conditions\BoolCondition;
  */
 class BoolConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new BoolCondition(true, $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new BoolCondition(true);

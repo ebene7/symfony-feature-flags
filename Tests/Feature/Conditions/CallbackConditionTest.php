@@ -12,6 +12,14 @@ use InvalidArgumentException;
  */
 class CallbackConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new CallbackCondition(function() {}, $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new CallbackCondition(function() {});

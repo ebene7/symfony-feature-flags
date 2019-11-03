@@ -15,6 +15,14 @@ class IpConditionTest extends ConditionTestCase
 {
     const IP_AS_LONG_192_168_1_0 = 3232235776;
     
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new IpCondition('http://127.0.0.1', $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new IpCondition('http://127.0.0.1');

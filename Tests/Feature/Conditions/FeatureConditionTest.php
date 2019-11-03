@@ -12,6 +12,14 @@ use E7\FeatureFlagsBundle\Feature\Feature;
  */
 class FeatureConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new FeatureCondition('awesome-feature', $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new FeatureCondition('awesome-feature');

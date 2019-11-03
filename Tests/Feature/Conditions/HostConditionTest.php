@@ -12,6 +12,14 @@ use InvalidArgumentException;
  */
 class HostConditionTest extends ConditionTestCase
 {
+    public function testConstructor()
+    {
+        $name = 'name-' . rand(0, 9999);
+        $condition = new HostCondition('http://example.com', $name);
+
+        $this->assertEquals($name, $condition->getName());
+    }
+
     public function testMagicMethodToString()
     {
         $condition = new HostCondition('http://example.com');
