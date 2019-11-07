@@ -17,4 +17,13 @@ class RequestProviderTest extends TestCase
     {
         $this->assertInstanceOf(ProviderInterface::class, new RequestProvider(new Request()));
     }
+
+    public function testGetClaimedKeys()
+    {
+        $provider = new RequestProvider(new Request());
+
+        $this->assertInternalType('array', $provider->getClaimedKeys());
+        $this->assertCount(1, $provider->getClaimedKeys());
+        $this->assertContains('request', $provider->getClaimedKeys());
+    }
 }

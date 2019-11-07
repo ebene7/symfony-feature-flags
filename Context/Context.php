@@ -2,10 +2,12 @@
 
 namespace E7\FeatureFlagsBundle\Context;
 
+use E7\FeatureFlagsBundle\Context\Key;
 use E7\FeatureFlagsBundle\Context\Provider\ProviderInterface;
 
 /**
  * Class Context
+ * @package E7\FeatureFlagsBundle\Context
  */
 class Context implements ContextInterface
 {
@@ -14,23 +16,65 @@ class Context implements ContextInterface
 
     /**
      * Constructor
-     * 
-     * @param array $data
+     *
+     * @param $providers
      */
-    public function __construct(array $data = [])
+    public function __construct($providers = [])
+    {
+        foreach ($providers as $provider) {
+            $this->addProvider($provider);
+        }
+    }
+
+    /**
+     * Add provider to all claimed keys
+     *
+     * @param ProviderInterface $provider
+     * @return Context
+     */
+    public function addProvider(ProviderInterface $provider)
+    {
+        foreach ($provider->getClaimedKeys() as $key) {
+            $key = new Key($key);
+            $this->data[$key->getRoot()] = $provider;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove provider and all claimed keys
+     *
+     * @param ProviderInterface $provider
+     * @return Context
+     */
+    public function removeProvider(ProviderInterface $provider)
+    {
+        return call_user_func_array([$this, 'remove'], $provider->getClaimedKeys());
+    }
+
+    /**
+     * Set data
+     *
+     * @param array $data
+     * @return Context
+     */
+    public function setData(array $data)
     {
         foreach ($data as $key => $value) {
             $this->set($key, $value);
         }
+
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function set($key, $value)
+    public function set($key, $value = null)
     {
-        $key = $this->normalizeKey($key);
-        $this->data[$key] = $value;
+        $key = new Key($key);
+        $this->data[(string) $key] = $value;
 
         return $this;
     }
@@ -40,11 +84,19 @@ class Context implements ContextInterface
      */
     public function get(string $key, $default = null)
     {
-        $value = !empty($this->data[$key]) ? $this->data[$key] : $default;
-        
+        $value = null;
+        $key = new Key($key);
+
+        if (!empty($this->data[(string) $key])) {
+            $value = $this->data[(string) $key];
+        } elseif (!empty($this->data[$key->getRoot()])) {
+            $value = $this->data[$key->getRoot()];
+        } else {
+            $value = $default;
+        }
+
         return $value instanceof ProviderInterface
-            ? $value->get($key)
-            : $value;
+            ? $value->get($key, $default) : $value;
     }
 
     /**
@@ -52,8 +104,17 @@ class Context implements ContextInterface
      */
     public function has(string $key)
     {
-        $key = $this->normalizeKey($key);
-        return !empty($this->data[$key]);
+        $key = new Key($key);
+
+        if (!empty($this->data[(string) $key])) {
+            return true;
+        }
+
+        if (!empty($this->data[$key->getRoot()])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -62,21 +123,23 @@ class Context implements ContextInterface
     public function remove(string ...$key)
     {
         foreach ($key as $k) {
-            $k = $this->normalizeKey($k);
-            unset($this->data[$k]);
+            $k = new Key($k);
+
+            if (!empty($this->data[$k->getRoot()])) {
+                $value = $this->data[$k->getRoot()];
+
+                if ($value instanceof ProviderInterface) {
+                    foreach ($value->getClaimedKeys() as $k2) {
+                        $k2 = new Key($k2);
+                        unset($this->data[(string) $k2]);
+                    }
+                    return call_user_func_array([$this, 'remove'], $value->getClaimedKeys());
+                }
+            }
+
+            unset($this->data[(string) $k]);
         }
 
         return $this;
-    }
-
-    /**
-     * Normalize $key value
-     * 
-     * @param string $key
-     * @return string Normalized $key
-     */
-    protected function normalizeKey(string $key): string
-    {
-        return strtolower($key);
     }
 }

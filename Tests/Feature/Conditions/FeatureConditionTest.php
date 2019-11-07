@@ -41,7 +41,8 @@ class FeatureConditionTest extends ConditionTestCase
     {
         $feature = new Feature($input['feature_name']);
         $condition = new FeatureCondition($input['name']);
-        $context = new Context(['feature' => $feature]);
+        $context = new Context();
+        $context->set('feature', $feature);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
     }

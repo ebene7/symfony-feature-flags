@@ -90,7 +90,8 @@ class IpConditionTest extends ConditionTestCase
     public function testVote(array $input, array $expected)
     {
         $condition = new IpCondition($input['ips']);
-        $context = new Context(['client_ip' => $input['ip']]);
+        $context = new Context();
+        $context->set('request.client_ip', $input['ip']);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
     }

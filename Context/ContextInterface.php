@@ -12,7 +12,7 @@ interface ContextInterface
      * @param mixed $value
      * @return ContextInterface
      */
-    public function set($key, $value);
+    public function set($key, $value = null);
 
     /**
      * @param string $key

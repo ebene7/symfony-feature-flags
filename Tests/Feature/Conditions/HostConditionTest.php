@@ -79,7 +79,8 @@ class HostConditionTest extends ConditionTestCase
         }
 
         $condition = new HostCondition($input['hosts']);
-        $context = new Context(['host' => $input['host']]);
+        $context = new Context();
+        $context->set('request.host', $input['host']);
 
         $this->assertEquals($expected['match'], $condition->vote($context));
     }

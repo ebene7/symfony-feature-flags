@@ -117,7 +117,7 @@ class FeatureBoxBuilderTest extends TestCase
                             ]
                         ]
                     ],
-                    'context' => new Context(['host' => 'www.example.com']),
+                    'context' => (new Context())->set('request.host', 'www.example.com'),
                 ],
                 [
                     'features' => [
@@ -151,9 +151,9 @@ class FeatureBoxBuilderTest extends TestCase
                             ],
                         ]
                     ],
-                    'context' => new Context([
-                        'host' => 'www.example.com',
-                        'client_ip' => '192.168.0.100',
+                    'context' => (new Context())->setData([
+                        'request.host' => 'www.example.com',
+                        'request.client_ip' => '192.168.0.100',
                     ]),
                 ],
                 [

@@ -59,7 +59,7 @@ class IpCondition extends AbstractCondition
      */
     protected function doVote(ContextInterface $context)
     {
-        $clientIp = $this->normalize($context->get('client_ip'));
+        $clientIp = $this->normalize($context->get('request.client_ip'));
         
         foreach ($this->ips as $ip) {
             $pattern = '/' . str_replace(['.', '*'], ['\\.','(.*)'], $ip) . '/i';

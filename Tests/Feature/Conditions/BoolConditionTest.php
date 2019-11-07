@@ -38,7 +38,7 @@ class BoolConditionTest extends ConditionTestCase
     public function testVote(bool $flag)
     {
         $condition = new BoolCondition($flag);
-        $context = new Context([]);
+        $context = new Context();
         
         $this->assertEquals($flag, $condition->vote($context));
     }
